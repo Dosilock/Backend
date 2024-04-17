@@ -15,8 +15,8 @@ public class MemberAbsent {
 	private Long id;
 
 	@ManyToOne
-	private Member memberId;
-	
+	private Member member;
+
 	private Long periodId;
 
 	@Column(nullable = false)

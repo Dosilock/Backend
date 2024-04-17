@@ -17,7 +17,7 @@ public class Auth {
 	private Long id;
 
 	@ManyToOne
-	private Member memberId;
+	private Member member;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
