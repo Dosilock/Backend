@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -17,7 +18,7 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping("/api/v1/signup")
-	public ResponseEntity<ResponseMemberDto> signUp(@RequestBody RequestMemberDto requestMemberDto) {
+	public ResponseEntity<ResponseMemberDto> signUp(@Valid @RequestBody RequestMemberDto requestMemberDto) {
 		return ResponseEntity.ok(memberService.signUp(requestMemberDto));
 	}
 }
