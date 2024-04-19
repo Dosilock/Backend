@@ -6,6 +6,7 @@ import org.dosilock.member.entity.Member;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.request.RequestMemberDto;
 import org.dosilock.response.ResponseMemberDto;
+import org.dosilock.utils.EmailUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -15,15 +16,21 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final EmailUtils emailUtils;
 
 	public ResponseMemberDto signUp(RequestMemberDto requestMemberDto) {
 		Member member = new Member(requestMemberDto);
 		member.updatePassword(hashPassword(requestMemberDto.getPassword()));
+		sendVerificationEmail(requestMemberDto.getEmail());
 		return new ResponseMemberDto(memberRepository.save(member));
 	}
 
 	public void sendVerificationEmail(String email) {
-		// 이메일 확인
+		emailUtils.sendSimpleMessage("hpky123@gmail.com", "Title TEST", "Context TEST");
+	}
+
+	public void confirmEmailVerification(String email) {
+		// 이메일 인증 성공 할 경우
 	}
 
 	public ResponseMemberDto updateUser(RequestMemberDto requestMemberDto) {
