@@ -2,13 +2,20 @@ package org.dosilock.member.entity;
 
 import java.time.LocalDateTime;
 
+import org.dosilock.request.RequestMemberDto;
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class Member {
 
 	@Id
@@ -30,6 +37,23 @@ public class Member {
 	@Column(nullable = false)
 	private Integer loginType;
 
-	@Column(nullable = false)
+	@CreatedDate
 	private LocalDateTime createdAt;
+
+	public Member(RequestMemberDto requestMemberDto) {
+		this.email = requestMemberDto.getEmail();
+		this.password = requestMemberDto.getPassword();
+		this.nickname = requestMemberDto.getNickname();
+		this.profileImg = requestMemberDto.getProfileImg();
+		this.loginType = requestMemberDto.getLoginType();
+	}
+
+	public void updateUser(RequestMemberDto requestMemberDto) {
+		this.nickname = requestMemberDto.getNickname();
+		this.profileImg = requestMemberDto.getProfileImg();
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
 }
