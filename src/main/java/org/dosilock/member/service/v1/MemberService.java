@@ -17,7 +17,6 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 
 	public ResponseMemberDto signUp(RequestMemberDto requestMemberDto) {
-
 		Member member = new Member(requestMemberDto);
 		member.updatePassword(hashPassword(requestMemberDto.getPassword()));
 		return new ResponseMemberDto(memberRepository.save(member));
