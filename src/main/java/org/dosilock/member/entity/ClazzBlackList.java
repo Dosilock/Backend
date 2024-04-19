@@ -20,7 +20,7 @@ public class ClazzBlackList {
 	private Long clazzId;
 
 	@ManyToOne
-	private Member memberId;
+	private Member member;
 
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
