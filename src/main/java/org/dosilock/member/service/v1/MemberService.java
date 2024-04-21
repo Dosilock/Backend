@@ -9,6 +9,7 @@ import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.request.RequestMemberDto;
 import org.dosilock.response.ResponseMemberDto;
+import org.dosilock.utils.CommonUtils;
 import org.dosilock.utils.EmailUtils;
 import org.springframework.stereotype.Service;
 
@@ -25,27 +26,32 @@ public class MemberService {
 	private final MemberRedisRepository memberRedisRepository;
 	private final EmailUtils emailUtils;
 
-	public void signUp(RequestMemberDto requestMemberDto) throws JsonProcessingException {
+	public void signUp(RequestMemberDto requestMemberDto) {
+		requestMemberDto.encodePassword(CommonUtils::hashPassword);
 
-		// 비밀번호 단방향 변경
-		requestMemberDto.setPassword(hashPassword(requestMemberDto.getPassword()));
+		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
+		emailUtils.sendSingupMessage(requestMemberDto.getEmail(), randomLinkCode);
 
-		// 메일 전달
-		emailUtils.sendSingupMessage(requestMemberDto.getEmail());
-
-		// Redis에 저장
-		MemberRedis memberRedis = MemberRedis.builder()
-			.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
-			.isEmailVerified(false)
-			.link(RandomStringUtils.randomAlphabetic(10))
-			.build();
-		memberRedisRepository.save(memberRedis);
+		try {
+			MemberRedis memberRedis = MemberRedis.builder()
+				.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
+				.isEmailVerified(false)
+				.link(randomLinkCode)
+				.build();
+			memberRedisRepository.save(memberRedis);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void confirmEmailVerification(String link) throws JsonProcessingException {
+	public void confirmEmailVerification(String link) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
-		Member member = new Member(new ObjectMapper().readValue(memberRedis.getUserData(), RequestMemberDto.class));
-		memberRepository.save(member);
+		try {
+			Member member = new Member(new ObjectMapper().readValue(memberRedis.getUserData(), RequestMemberDto.class));
+			memberRepository.save(member);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public ResponseMemberDto updateUser(RequestMemberDto requestMemberDto) {
