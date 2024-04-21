@@ -20,12 +20,12 @@ public class EmailUtils {
 		emailSender.send(message);
 	}
 
-	public void sendSingupMessage(String to) {
+	public void sendSingupMessage(String to, String randomLinkCode) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom("gongsilock@gmail.com");
 		message.setTo(to);
 		message.setSubject("공시락 회원가입 이메일 인증 입니다.");
-		message.setText("확인 버튼");
+		message.setText(randomLinkCode);
 		emailSender.send(message);
 	}
 }
