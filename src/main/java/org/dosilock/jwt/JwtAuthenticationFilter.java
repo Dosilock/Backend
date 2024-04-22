@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtTokenProvider jwtTokenProvider;
 	private static final String[] WHITELIST = {
 		"/api/v1/signin", // 로그인
-		"/api/v1/signup",  // 회원가입
+		"/api/v1/signup", // 회원가입
 	};
 	private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
@@ -43,9 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		String token = resolveToken(request);
-		if (token == null && path.contains("/api/v1/sse-connection")) {
-			chain.doFilter(request, response);
-			return;
+		if(token == null) {
+			throw new RuntimeException();
 		}
 
 		try {
@@ -53,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			Authentication authentication = jwtTokenProvider.getAuthentication(token);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		} catch (ExpiredJwtException e) {    // 토큰 만료시
+		} catch (ExpiredJwtException e) { // 토큰 만료시
 			String newAccessToken = jwtTokenProvider.reissuanceAccessToken(token,
 				jwtTokenProvider.validateRefreshToken(token));
 			jwtTokenProvider.createCookieAccessToken(newAccessToken, response);
