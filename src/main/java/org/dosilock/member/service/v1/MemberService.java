@@ -1,17 +1,26 @@
 package org.dosilock.member.service.v1;
 
-import static org.dosilock.utils.CommonUtils.*;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.dosilock.jwt.JwtToken;
+import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.entity.Member;
 import org.dosilock.member.redis.MemberRedis;
 import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.request.RequestMemberDto;
-import org.dosilock.response.ResponseMemberDto;
 import org.dosilock.utils.CommonUtils;
 import org.dosilock.utils.EmailUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,14 +29,37 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberService implements UserDetailsService {
 
 	private final MemberRepository memberRepository;
 	private final MemberRedisRepository memberRedisRepository;
 	private final EmailUtils emailUtils;
 
-	public void signUp(RequestMemberDto requestMemberDto) {
-		requestMemberDto.encodePassword(CommonUtils::hashPassword);
+	private final JwtTokenProvider jwtTokenProvider;
+	private final AuthenticationManagerBuilder authenticationManagerBuilder;
+	private final PasswordEncoder passwordEncoder;
+
+	@Transactional(readOnly = true)
+	public JwtToken signin(RequestMemberDto requestMemberDto) {
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+			requestMemberDto.getEmail(),
+			requestMemberDto.getPassword());
+		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		return jwtTokenProvider.generateToken(authentication);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String email) {
+		return memberRepository.findByEmail(email)
+			.map(user -> User.builder()
+				.username(user.getEmail())
+				.password(user.getPassword())
+				.build())
+			.orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
+	}
+
+	public void signup(RequestMemberDto requestMemberDto) {
+		requestMemberDto.encodePassword(passwordEncoder::encode);
 
 		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
 		emailUtils.sendSingupMessage(requestMemberDto.getEmail(), randomLinkCode);
@@ -52,25 +84,5 @@ public class MemberService {
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public ResponseMemberDto updateUser(RequestMemberDto requestMemberDto) {
-		Member member = memberRepository.findByEmail(requestMemberDto.getEmail());
-		member.updateUser(requestMemberDto);
-		return new ResponseMemberDto(member);
-	}
-
-	public ResponseMemberDto deleteUser(RequestMemberDto requestMemberDto) {
-		return null;
-	}
-
-	public ResponseMemberDto myPage(RequestMemberDto requestMemberDto) {
-		return new ResponseMemberDto(memberRepository.findByEmail(requestMemberDto.getEmail()));
-	}
-
-	public ResponseMemberDto modifyPassword(RequestMemberDto requestMemberDto) {
-		Member member = memberRepository.findByEmail(requestMemberDto.getEmail());
-		member.updatePassword(hashPassword(requestMemberDto.getPassword()));
-		return new ResponseMemberDto(member);
 	}
 }
