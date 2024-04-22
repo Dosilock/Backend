@@ -9,7 +9,6 @@ import org.dosilock.member.redis.MemberRedis;
 import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.request.RequestMemberDto;
-import org.dosilock.utils.CommonUtils;
 import org.dosilock.utils.EmailUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
