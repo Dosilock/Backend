@@ -159,16 +159,19 @@ public class JwtTokenProvider {
 		return null;
 	}
 
-	public void createCookieAccessToken(String accessToken, HttpServletResponse httpServletResponse) throws
-		UnsupportedEncodingException {
-		ResponseCookie cookie = ResponseCookie.from("Authorization",
-				URLEncoder.encode("Bearer " + accessToken, "utf-8").replaceAll("\\+", "%20"))
-			.path("/")
-			.sameSite("None")
-			.httpOnly(false)
-			.secure(true)
-			.maxAge(604800)
-			.build();
-		httpServletResponse.addHeader("Set-Cookie", cookie.toString());
+	public void createCookieAccessToken(String accessToken, HttpServletResponse httpServletResponse) {
+		try {
+			ResponseCookie cookie = ResponseCookie.from("Authorization",
+					URLEncoder.encode("Bearer " + accessToken, "utf-8").replaceAll("\\+", "%20"))
+				.path("/")
+				.sameSite("None")
+				.httpOnly(false)
+				.secure(true)
+				.maxAge(604800)
+				.build();
+			httpServletResponse.addHeader("Set-Cookie", cookie.toString());
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

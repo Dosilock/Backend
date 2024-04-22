@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtTokenProvider jwtTokenProvider;
 	private static final String[] WHITELIST = {
 		"/api/v1/signin", // 로그인
-		"/api/v1/signup", // 회원가입
+		"/api/v1/signup/**", // 회원가입
 	};
 	private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
