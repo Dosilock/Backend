@@ -49,6 +49,7 @@ public class OAuthAttributes {
 			.email(email)
 			.nickname(name)
 			.profileImg(picture)
+			.loginType(1)
 			.build();
 	}
 }
