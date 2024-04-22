@@ -12,11 +12,15 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
@@ -52,12 +56,9 @@ public class Member {
 		this.loginType = requestMemberDto.getLoginType();
 	}
 
-	public void updateUser(RequestMemberDto requestMemberDto) {
-		this.nickname = requestMemberDto.getNickname();
-		this.profileImg = requestMemberDto.getProfileImg();
-	}
-
-	public void updatePassword(String password) {
-		this.password = password;
+	public Member update(String name, String picture) {
+		this.nickname = name;
+		this.profileImg = picture;
+		return this;
 	}
 }
