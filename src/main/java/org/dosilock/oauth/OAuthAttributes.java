@@ -2,6 +2,7 @@ package org.dosilock.oauth;
 
 import java.util.Map;
 
+import org.dosilock.member.entity.AuthEnum;
 import org.dosilock.member.entity.Member;
 
 import lombok.Builder;
@@ -25,14 +26,11 @@ public class OAuthAttributes {
 		this.picture = picture;
 	}
 
-	// OAuth2User에서 반환하는 사용자 정보는 Map
-	// 따라서 값 하나하나를 변환해야 한다.
 	public static OAuthAttributes of(String registrationId, String userNameAttributeName,
 		Map<String, Object> attributes) {
 		return ofGoogle(userNameAttributeName, attributes);
 	}
 
-	// 구글 생성자
 	private static OAuthAttributes ofGoogle(String usernameAttributeName, Map<String, Object> attributes) {
 		return OAuthAttributes.builder()
 			.name((String)attributes.get("name"))
@@ -43,13 +41,12 @@ public class OAuthAttributes {
 			.build();
 	}
 
-	// User 엔티티 생성
 	public Member toEntity() {
 		return Member.builder()
 			.email(email)
 			.nickname(name)
 			.profileImg(picture)
-			.loginType(1)
+			.loginType(AuthEnum.GOOGLE)
 			.build();
 	}
 }

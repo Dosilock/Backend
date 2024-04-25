@@ -23,8 +23,6 @@ public class RequestMemberDto {
 	@NotNull(message = "별명을 작성해주세요.")
 	private String nickname;
 	private String profileImg;
-	@NotNull(message = "로그인 형식이 없습니다.")
-	private Integer loginType;
 
 	public void encodePassword(Function<String, String> passwordEncoder) {
 		this.password = passwordEncoder.apply(password);

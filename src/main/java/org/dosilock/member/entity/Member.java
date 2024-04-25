@@ -1,6 +1,7 @@
 package org.dosilock.member.entity;
 
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
 import org.dosilock.request.RequestMemberDto;
 import org.springframework.data.annotation.CreatedDate;
@@ -19,8 +20,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
@@ -42,7 +43,7 @@ public class Member {
 	private String profileImg;
 
 	@Column(nullable = false)
-	private Integer loginType;
+	private AuthEnum loginType;
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)
@@ -53,12 +54,17 @@ public class Member {
 		this.password = requestMemberDto.getPassword();
 		this.nickname = requestMemberDto.getNickname();
 		this.profileImg = requestMemberDto.getProfileImg();
-		this.loginType = requestMemberDto.getLoginType();
+		this.loginType = AuthEnum.EMAIL;
 	}
 
 	public Member update(String name, String picture) {
 		this.nickname = name;
 		this.profileImg = picture;
+		return this;
+	}
+
+	public Member updatePassword(String password, Function<String, String> passwordEncoder) {
+		this.password = passwordEncoder.apply(password);
 		return this;
 	}
 }

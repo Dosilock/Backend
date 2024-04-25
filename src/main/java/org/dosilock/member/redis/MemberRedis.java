@@ -16,5 +16,4 @@ public class MemberRedis {
 	private String userData;
 	@Indexed
 	private String link;
-	private Boolean isEmailVerified;
 }

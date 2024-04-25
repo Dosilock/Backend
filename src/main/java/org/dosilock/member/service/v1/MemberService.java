@@ -1,6 +1,5 @@
 package org.dosilock.member.service.v1;
 
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
@@ -9,6 +8,7 @@ import org.dosilock.member.redis.MemberRedis;
 import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.request.RequestMemberDto;
+import org.dosilock.response.ResponseMemberDto;
 import org.dosilock.utils.EmailUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,8 +32,8 @@ public class MemberService implements UserDetailsService {
 
 	private final MemberRepository memberRepository;
 	private final MemberRedisRepository memberRedisRepository;
-	private final EmailUtils emailUtils;
 
+	private final EmailUtils emailUtils;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final PasswordEncoder passwordEncoder;
@@ -48,6 +48,7 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String email) {
 		return memberRepository.findByEmail(email)
 			.map(user -> User.builder()
@@ -57,16 +58,16 @@ public class MemberService implements UserDetailsService {
 			.orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
 	}
 
+	@Transactional
 	public void signup(RequestMemberDto requestMemberDto) {
 		requestMemberDto.encodePassword(passwordEncoder::encode);
 
 		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
-		emailUtils.sendSingupMessage(requestMemberDto.getEmail(), randomLinkCode);
+		emailUtils.sendSignupMessage(requestMemberDto.getEmail(), randomLinkCode);
 
 		try {
 			MemberRedis memberRedis = MemberRedis.builder()
 				.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
-				.isEmailVerified(false)
 				.link(randomLinkCode)
 				.build();
 			memberRedisRepository.save(memberRedis);
@@ -75,11 +76,45 @@ public class MemberService implements UserDetailsService {
 		}
 	}
 
+	@Transactional
 	public void confirmEmailVerification(String link) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
 		try {
 			Member member = new Member(new ObjectMapper().readValue(memberRedis.getUserData(), RequestMemberDto.class));
 			memberRepository.save(member);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseMemberDto myPage(String email) {
+		return new ResponseMemberDto(memberRepository.findByEmail(email).orElseThrow());
+	}
+
+	public void changePassword(String email, RequestMemberDto requestMemberDto) {
+		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
+		emailUtils.sendChangePasswordMessage(email, randomLinkCode);
+		try {
+			MemberRedis memberRedis = MemberRedis.builder()
+				.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
+				.link(randomLinkCode)
+				.build();
+			memberRedisRepository.save(memberRedis);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Transactional
+	public void confirmChangePassword(String email, String link) {
+		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
+		try {
+			RequestMemberDto requestMemberDto = new ObjectMapper().readValue(memberRedis.getUserData(),
+				RequestMemberDto.class);
+
+			Member member = memberRepository.findByEmail(email).orElseThrow();
+			member.updatePassword(requestMemberDto.getPassword(), passwordEncoder::encode);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
