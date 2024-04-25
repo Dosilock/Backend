@@ -48,6 +48,7 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String email) {
 		return memberRepository.findByEmail(email)
 			.map(user -> User.builder()
@@ -57,6 +58,7 @@ public class MemberService implements UserDetailsService {
 			.orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
 	}
 
+	@Transactional
 	public void signup(RequestMemberDto requestMemberDto) {
 		requestMemberDto.encodePassword(passwordEncoder::encode);
 
@@ -74,6 +76,7 @@ public class MemberService implements UserDetailsService {
 		}
 	}
 
+	@Transactional
 	public void confirmEmailVerification(String link) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
 		try {
@@ -84,6 +87,7 @@ public class MemberService implements UserDetailsService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public ResponseMemberDto myPage(String email) {
 		return new ResponseMemberDto(memberRepository.findByEmail(email).orElseThrow());
 	}
@@ -91,10 +95,19 @@ public class MemberService implements UserDetailsService {
 	public void changePassword(RequestMemberDto requestMemberDto) {
 		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
 		emailUtils.sendChangePasswordMessage(requestMemberDto.getEmail(), randomLinkCode);
+		try {
+			MemberRedis memberRedis = MemberRedis.builder()
+				.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
+				.link(randomLinkCode)
+				.build();
+			memberRedisRepository.save(memberRedis);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Transactional
-	public void applyChangePassword(String link) {
+	public void confirmChangePassword(String link) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
 		try {
 			RequestMemberDto requestMemberDto = new ObjectMapper().readValue(memberRedis.getUserData(),
