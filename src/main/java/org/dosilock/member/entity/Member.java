@@ -1,6 +1,7 @@
 package org.dosilock.member.entity;
 
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
 import org.dosilock.request.RequestMemberDto;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,11 +13,15 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
@@ -38,7 +43,7 @@ public class Member {
 	private String profileImg;
 
 	@Column(nullable = false)
-	private Integer loginType;
+	private AuthEnum loginType;
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)
@@ -49,15 +54,17 @@ public class Member {
 		this.password = requestMemberDto.getPassword();
 		this.nickname = requestMemberDto.getNickname();
 		this.profileImg = requestMemberDto.getProfileImg();
-		this.loginType = requestMemberDto.getLoginType();
+		this.loginType = AuthEnum.EMAIL;
 	}
 
-	public void updateUser(RequestMemberDto requestMemberDto) {
-		this.nickname = requestMemberDto.getNickname();
-		this.profileImg = requestMemberDto.getProfileImg();
+	public Member update(String name, String picture) {
+		this.nickname = name;
+		this.profileImg = picture;
+		return this;
 	}
 
-	public void updatePassword(String password) {
-		this.password = password;
+	public Member updatePassword(String password, Function<String, String> passwordEncoder) {
+		this.password = passwordEncoder.apply(password);
+		return this;
 	}
 }

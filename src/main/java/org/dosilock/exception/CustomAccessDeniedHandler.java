@@ -1,4 +1,4 @@
-package org.dosilock.exceptionhandler;
+package org.dosilock.exception;
 
 import java.io.IOException;
 
