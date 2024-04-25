@@ -2,7 +2,6 @@ package org.dosilock.configuration;
 
 import org.dosilock.jwt.JwtAuthenticationFilter;
 import org.dosilock.jwt.JwtTokenProvider;
-import org.dosilock.oauth.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -24,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final JwtTokenProvider jwtTokenProvider;
-	private final CustomOAuth2UserService oAuth2UserService;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

@@ -42,7 +42,7 @@ public class Member {
 	private String profileImg;
 
 	@Column(nullable = false)
-	private Integer loginType;
+	private AuthEnum loginType;
 
 	@CreatedDate
 	@Column(nullable = false, updatable = false)
@@ -53,7 +53,7 @@ public class Member {
 		this.password = requestMemberDto.getPassword();
 		this.nickname = requestMemberDto.getNickname();
 		this.profileImg = requestMemberDto.getProfileImg();
-		this.loginType = requestMemberDto.getLoginType();
+		this.loginType = AuthEnum.EMAIL;
 	}
 
 	public Member update(String name, String picture) {

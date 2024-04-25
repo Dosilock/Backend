@@ -1,6 +1,5 @@
 package org.dosilock.member.service.v1;
 
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
@@ -83,5 +82,13 @@ public class MemberService implements UserDetailsService {
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void myPage() {
+
+	}
+
+	public void changePassword() {
+
 	}
 }
