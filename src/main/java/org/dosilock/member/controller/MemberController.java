@@ -53,14 +53,16 @@ public class MemberController {
 	}
 
 	@PostMapping("/password")
-	public ResponseEntity<Void> changePassword(@RequestBody RequestMemberDto requestMemberDto) {
-		memberService.changePassword(requestMemberDto);
+	public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserDetails userDetails,
+		@RequestBody RequestMemberDto requestMemberDto) {
+		memberService.changePassword(userDetails.getUsername(), requestMemberDto);
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/password/link/{linkCode}")
-	public ResponseEntity<Void> confirmChangePassword(@PathVariable String linkCode) {
-		memberService.confirmChangePassword(linkCode);
+	public ResponseEntity<Void> confirmChangePassword(@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable String linkCode) {
+		memberService.confirmChangePassword(userDetails.getUsername(), linkCode);
 		return ResponseEntity.ok().build();
 	}
 }

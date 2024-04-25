@@ -92,9 +92,9 @@ public class MemberService implements UserDetailsService {
 		return new ResponseMemberDto(memberRepository.findByEmail(email).orElseThrow());
 	}
 
-	public void changePassword(RequestMemberDto requestMemberDto) {
+	public void changePassword(String email, RequestMemberDto requestMemberDto) {
 		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
-		emailUtils.sendChangePasswordMessage(requestMemberDto.getEmail(), randomLinkCode);
+		emailUtils.sendChangePasswordMessage(email, randomLinkCode);
 		try {
 			MemberRedis memberRedis = MemberRedis.builder()
 				.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
@@ -107,13 +107,13 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional
-	public void confirmChangePassword(String link) {
+	public void confirmChangePassword(String email, String link) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
 		try {
 			RequestMemberDto requestMemberDto = new ObjectMapper().readValue(memberRedis.getUserData(),
 				RequestMemberDto.class);
 
-			Member member = memberRepository.findByEmail(requestMemberDto.getEmail()).orElseThrow();
+			Member member = memberRepository.findByEmail(email).orElseThrow();
 			member.updatePassword(requestMemberDto.getPassword(), passwordEncoder::encode);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
