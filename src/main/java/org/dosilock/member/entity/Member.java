@@ -1,6 +1,7 @@
 package org.dosilock.member.entity;
 
 import java.time.LocalDateTime;
+import java.util.function.Function;
 
 import org.dosilock.request.RequestMemberDto;
 import org.springframework.data.annotation.CreatedDate;
@@ -19,8 +20,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
@@ -59,6 +60,11 @@ public class Member {
 	public Member update(String name, String picture) {
 		this.nickname = name;
 		this.profileImg = picture;
+		return this;
+	}
+
+	public Member updatePassword(String password, Function<String, String> passwordEncoder) {
+		this.password = passwordEncoder.apply(password);
 		return this;
 	}
 }
