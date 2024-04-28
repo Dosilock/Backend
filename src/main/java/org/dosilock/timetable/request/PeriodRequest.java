@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class PeriodRequest {
+public class PeriodRequest extends TimetableRequest {
 	private String periodName;
 	private String periodStartTime;
 	private String periodEndTime;
