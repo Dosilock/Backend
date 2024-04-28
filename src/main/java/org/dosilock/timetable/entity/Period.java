@@ -1,6 +1,7 @@
 package org.dosilock.timetable.entity;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,14 +29,16 @@ public class Period {
 
 	private String periodName;
 
-	private LocalDateTime periodStartTime;
+	private LocalTime periodStartTime;
 
-	private LocalDateTime periodEndTime;
+	private LocalTime periodEndTime;
 
-	private LocalDateTime recessStartTime;
+	private LocalTime recessStartTime;
 
-	private LocalDateTime recessEndTime;
+	private LocalTime recessEndTime;
 
 	private boolean attendanceRequired;
+
+	private int periodType;
 
 }

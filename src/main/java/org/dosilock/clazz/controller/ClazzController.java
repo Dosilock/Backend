@@ -1,6 +1,7 @@
 package org.dosilock.clazz.controller;
 
 import org.dosilock.clazz.request.ClazzRequest;
+import org.dosilock.clazz.response.ClazzResponse;
 import org.dosilock.clazz.service.ClazzService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/clazz")
+@RequestMapping("/api/v1/clazz/")
 @CrossOrigin
 public class ClazzController {
 
@@ -24,9 +25,9 @@ public class ClazzController {
 
 	@Operation(summary = "방 생성 API", description = "반 만들기(이름, 아이콘, 설명), 템플릿, 시간표(이름, 요일, 시간:교시:휴식, 출첵 여부), 세부 설정(교시 이름, 출첵 여부, 학습법)")
 	@PostMapping()
-	public ResponseEntity<Void> addClazz(@Valid @RequestBody ClazzRequest clazzRequest) {
-		clazzService.addClazz(clazzRequest);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<ClazzResponse> addClazz(@Valid @RequestBody ClazzRequest clazzRequest) throws Exception {
+		ClazzResponse clazzResponse = clazzService.addClazz(clazzRequest);
+		return ResponseEntity.ok(clazzResponse);
 	}
 
 	@Operation(summary = "반 목록 API", description = "반목록, 참여중인 인원 수")

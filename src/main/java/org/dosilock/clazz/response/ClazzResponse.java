@@ -5,4 +5,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class ClazzResponse {
+
+	private String clazzLink;
 }

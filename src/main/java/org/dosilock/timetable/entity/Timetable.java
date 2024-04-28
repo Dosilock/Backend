@@ -29,5 +29,7 @@ public class Timetable {
 
 	private String timetableName;
 
+	private Day day;
+
 	private LocalDateTime creatredAt;
 }
