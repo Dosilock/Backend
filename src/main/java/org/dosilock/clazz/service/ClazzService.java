@@ -29,38 +29,39 @@ public class ClazzService {
 
 	@Transactional
 	public ClazzResponse addClazz(ClazzRequest clazzRequest) throws Exception {
-		Clazz clazz = new Clazz();
-		clazz.setClazzTitle(clazzRequest.getClazzName());
-		clazz.setClazzDescription(clazzRequest.getClazzDescription());
+		Clazz clazz = Clazz.builder()
+			.clazzTitle(clazzRequest.getClazzName())
+			.clazzDescription(clazzRequest.getClazzDescription())
+			.clazzLink("https://gongsilock.com/" + inviteLink.createInveteLink())
+			.createdAt(LocalDateTime.now())
+			.updatedAt(LocalDateTime.now())
+			.build();
 
-		String link = inviteLink.createInveteLink();
-		clazz.setClazzLink("https://gongsilock.com/" + link);
-		clazz.setCreatedAt(LocalDateTime.now());
-		clazz.setUpdatedAt(LocalDateTime.now());
-		Clazz savedClazz = clazzRepository.save(clazz);
+		clazzRepository.save(clazz);
 
-		Timetable timetable = new Timetable();
-		timetable.setTimetableName(clazzRequest.getTimetableRequest().getTimetableName());
-		timetable.setDay(clazzRequest.getTimetableRequest().getDay());
-		timetable.setCreatredAt(LocalDateTime.now());
+		Timetable timetable = Timetable.builder()
+			.timetableName(clazzRequest.getTimetableRequest().getTimetableName())
+			.createdAt(LocalDateTime.now())
+			.build();
+
 		timetableRepository.save(timetable);
 
-		for(PeriodRequest per : clazzRequest.getTimetableRequest().getPeriodRequests()) {
-			Period period = new Period();
-			period.setPeriodName(per.getPeriodName());
-			period.setPeriodStartTime(LocalTime.parse(per.getPeriodStartTime()));
-			period.setPeriodEndTime(LocalTime.parse(per.getPeriodEndTime()));
-			period.setRecessStartTime(LocalTime.parse(per.getRecessStartTime()));
-			period.setRecessEndTime(LocalTime.parse(per.getRecessEndTime()));
-			period.setAttendanceRequired(per.isAttendanceRequired());
-			period.setPeriodType(per.getPeriodType());
+		clazzRequest.getTimetableRequest().getPeriodRequests().forEach(per -> {
+			Period period = Period.builder()
+				.day(per.getDay())
+				.periodName(per.getPeriodName())
+				.periodStartTime(LocalTime.parse(per.getPeriodStartTime()))
+				.periodEndTime(LocalTime.parse(per.getPeriodEndTime()))
+				.recessStartTime(LocalTime.parse(per.getRecessStartTime()))
+				.recessEndTime(LocalTime.parse(per.getRecessEndTime()))
+				.attendanceRequired(per.isAttendanceRequired())
+				.periodType(per.getPeriodType())
+				.build();
+
 			periodRepository.save(period);
-		}
+		});
 
-		ClazzResponse clazzResponse = new ClazzResponse();
-		clazzResponse.setClazzLink(savedClazz.getClazzLink());
-
-		return clazzResponse;
+		return new ClazzResponse(clazz.getClazzLink());
 	}
 
 	public void getClazz() {

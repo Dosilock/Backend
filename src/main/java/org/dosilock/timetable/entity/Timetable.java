@@ -11,12 +11,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "timetable")
 @Getter @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Timetable {
 
 	@Id
@@ -29,7 +35,5 @@ public class Timetable {
 
 	private String timetableName;
 
-	private Day day;
-
-	private LocalDateTime creatredAt;
+	private LocalDateTime createdAt;
 }

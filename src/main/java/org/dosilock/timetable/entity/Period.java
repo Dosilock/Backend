@@ -11,12 +11,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "period")
 @Getter @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Period {
 
 	@Id
@@ -26,6 +32,8 @@ public class Period {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "timetable_id", referencedColumnName = "id")
 	private Timetable timetable;
+
+	private Day day;
 
 	private String periodName;
 
