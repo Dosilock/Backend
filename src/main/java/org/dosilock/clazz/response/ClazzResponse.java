@@ -9,6 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClazzResponse {
-
 	private String clazzLink;
 }

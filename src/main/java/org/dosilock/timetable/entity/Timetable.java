@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import org.dosilock.clazz.entity.Clazz;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,6 +34,9 @@ public class Timetable {
 	@OneToOne
 	@JoinColumn(name = "clazz_id", referencedColumnName = "id")
 	private Clazz clazz;
+
+	@Enumerated(EnumType.STRING)
+	private Day day;
 
 	private String timetableName;
 
