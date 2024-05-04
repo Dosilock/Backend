@@ -13,13 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class PeriodRequest {
-	private Day day;
 	private String periodName;
 	private String periodStartTime;
 	private String periodEndTime;
 	private String recessStartTime;
 	private String recessEndTime;
-	@JsonProperty("attendanceRequired")
-	private boolean attendanceRequired;
+	@JsonProperty("isAttendanceRequired")
+	private boolean isAttendanceRequired;
 	private int periodType;
 }

@@ -33,8 +33,6 @@ public class Period {
 	@JoinColumn(name = "timetable_id", referencedColumnName = "id")
 	private Timetable timetable;
 
-	private Day day;
-
 	private String periodName;
 
 	private LocalTime periodStartTime;

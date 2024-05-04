@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class ClazzListResponse {
-
 	private String clazzName;
 	@JsonProperty("isOwned")
 	private boolean isOwned;
