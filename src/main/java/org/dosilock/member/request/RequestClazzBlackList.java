@@ -1,4 +1,4 @@
-package org.dosilock.response;
+package org.dosilock.member.request;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ResponseClazzBlackList {
+public class RequestClazzBlackList {
 	private Long id;
 	// FK Entity 추가 시 적용 필요
 	private Long clazzId;

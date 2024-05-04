@@ -2,9 +2,9 @@ package org.dosilock.member.controller;
 
 import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
+import org.dosilock.member.request.RequestMemberDto;
+import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.member.service.v1.MemberService;
-import org.dosilock.request.RequestMemberDto;
-import org.dosilock.response.ResponseMemberDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

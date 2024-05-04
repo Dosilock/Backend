@@ -1,4 +1,4 @@
-package org.dosilock.request;
+package org.dosilock.member.request;
 
 import java.util.function.Function;
 

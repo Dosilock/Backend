@@ -1,4 +1,4 @@
-package org.dosilock.response;
+package org.dosilock.member.response;
 
 import org.dosilock.member.entity.AuthEnum;
 import org.dosilock.member.entity.Member;
