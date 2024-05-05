@@ -10,6 +10,7 @@ import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.utils.EmailUtils;
+import org.dosilock.utils.GetMember;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,10 @@ public class MemberService implements UserDetailsService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final PasswordEncoder passwordEncoder;
+
+	private Member member() {
+		return GetMember.getMember();
+	}
 
 	@Transactional(readOnly = true)
 	public JwtToken signin(RequestMemberDto requestMemberDto) {
@@ -88,11 +93,11 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional(readOnly = true)
-	public ResponseMemberDto myPage(String email) {
-		return new ResponseMemberDto(memberRepository.findByEmail(email).orElseThrow());
+	public ResponseMemberDto myPage() {
+		return new ResponseMemberDto(member());
 	}
 
-	public void changePassword(String email, RequestMemberDto requestMemberDto) {
+	public void changePassword(RequestMemberDto requestMemberDto) {
 		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
 		emailUtils.sendChangePasswordMessage(email, randomLinkCode);
 		try {

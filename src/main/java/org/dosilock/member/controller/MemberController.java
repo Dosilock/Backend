@@ -48,21 +48,21 @@ public class MemberController {
 	}
 
 	@PostMapping("/mypage")
-	public ResponseEntity<ResponseMemberDto> myPage(@AuthenticationPrincipal UserDetails userDetails) {
-		return ResponseEntity.ok(memberService.myPage(userDetails.getUsername()));
+	public ResponseEntity<ResponseMemberDto> myPage() {
+		return ResponseEntity.ok(memberService.myPage());
 	}
 
 	@PostMapping("/password")
-	public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserDetails userDetails,
+	public ResponseEntity<Void> changePassword(
 		@RequestBody RequestMemberDto requestMemberDto) {
-		memberService.changePassword(userDetails.getUsername(), requestMemberDto);
+		memberService.changePassword(requestMemberDto);
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/password/link/{linkCode}")
-	public ResponseEntity<Void> confirmChangePassword(@AuthenticationPrincipal UserDetails userDetails,
+	public ResponseEntity<Void> confirmChangePassword(
 		@PathVariable String linkCode) {
-		memberService.confirmChangePassword(userDetails.getUsername(), linkCode);
+		memberService.confirmChangePassword(linkCode);
 		return ResponseEntity.ok().build();
 	}
 }
