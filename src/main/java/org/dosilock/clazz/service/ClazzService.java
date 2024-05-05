@@ -14,11 +14,14 @@ import org.dosilock.clazz.request.ClazzRequest;
 import org.dosilock.clazz.response.ClazzInfoResponse;
 import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzLinkResponse;
+import org.dosilock.member.entity.Member;
+import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.timetable.entity.Day;
 import org.dosilock.timetable.entity.Period;
 import org.dosilock.timetable.entity.Timetable;
 import org.dosilock.timetable.repository.PeriodRepository;
 import org.dosilock.timetable.repository.TimetableRepository;
+import org.dosilock.utils.GetMember;
 import org.dosilock.utils.InviteLink;
 import org.springframework.stereotype.Service;
 
@@ -35,22 +38,30 @@ public class ClazzService {
 	private final ClazzPersonnelRepository personnelRepository;
 	private final InviteLink inviteLink;
 	private final ClazzPersonnelRepository clazzPersonnelRepository;
+	private final MemberRepository memberRepository;
+	private final GetMember getMember;
+
+	private Member member() {
+		return GetMember.getMember();
+	}
 
 	@Transactional
 	public ClazzLinkResponse addClazz(ClazzRequest clazzRequest) throws Exception {
 		Clazz clazz = Clazz.builder()
 			.clazzTitle(clazzRequest.getClazzName())
 			.clazzDescription(clazzRequest.getClazzDescription())
+			.member(member())
+			.clazzIcon(clazzRequest.getClazzIcon())
 			.clazzLink("https://gongsilock.com/" + inviteLink.createInveteLink())
 			.createdAt(LocalDateTime.now())
 			.updatedAt(LocalDateTime.now())
 			.build();
 
-		clazzRepository.save(clazz);
+		Clazz getClazz = clazzRepository.save(clazz);
 
 		ClazzPersonnel clazzPersonnel = ClazzPersonnel.builder()
-			.clazz(clazz)
-			//현재 접속한 사용자 == 방장을 멤버에 저장
+			.clazz(getClazz)
+			.member(member())
 			.roleStatus(0)
 			.acceptedStatus(0)
 			.createdAt(LocalDateTime.now())
@@ -59,16 +70,22 @@ public class ClazzService {
 		personnelRepository.save(clazzPersonnel);
 
 		List<Integer> dayValues = clazzRequest.getTimetableRequest().getDays();
+		String days = dayValues.stream()
+			.map(String::valueOf)
+			.collect(Collectors.joining(","));
 
 		Timetable timetable = Timetable.builder()
+			.clazz(getClazz)
 			.timetableName(clazzRequest.getTimetableRequest().getTimetableName())
+			.timetableDays(days)
 			.createdAt(LocalDateTime.now())
 			.build();
 
-		timetableRepository.save(timetable);
+		Timetable getTimetable = timetableRepository.save(timetable);
 
 		clazzRequest.getTimetableRequest().getPeriodRequests().forEach(per -> {
 			Period period = Period.builder()
+				.timetable(getTimetable)
 				.periodName(per.getPeriodName())
 				.periodStartTime(LocalTime.parse(per.getPeriodStartTime()))
 				.periodDuration(per.getPeriodDuration())

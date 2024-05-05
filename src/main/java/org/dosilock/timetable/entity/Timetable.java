@@ -38,8 +38,7 @@ public class Timetable {
 	@JoinColumn(name = "clazz_id", referencedColumnName = "id")
 	private Clazz clazz;
 
-	@Enumerated(EnumType.STRING)
-	private Day day;
+	private String timetableDays;
 
 	private String timetableName;
 
