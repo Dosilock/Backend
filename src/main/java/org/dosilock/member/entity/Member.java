@@ -3,7 +3,7 @@ package org.dosilock.member.entity;
 import java.time.LocalDateTime;
 import java.util.function.Function;
 
-import org.dosilock.request.RequestMemberDto;
+import org.dosilock.member.request.RequestMemberDto;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

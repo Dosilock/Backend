@@ -1,4 +1,4 @@
-package org.dosilock.request;
+package org.dosilock.member.response;
 
 import org.dosilock.member.entity.Member;
 
@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 @Getter
-public class RequestMemberAbsent {
+public class ResponseMemberAbsent {
 	private Long id;
 	private Member memberId;
 	private Long periodId;

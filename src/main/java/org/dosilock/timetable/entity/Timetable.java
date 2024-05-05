@@ -7,8 +7,6 @@ import org.dosilock.clazz.entity.Clazz;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,7 +31,7 @@ public class Timetable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "clazz_id", referencedColumnName = "id")
 	private Clazz clazz;
 
@@ -42,5 +40,7 @@ public class Timetable {
 
 	private String timetableName;
 
+	@CreatedDate
+	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 }
