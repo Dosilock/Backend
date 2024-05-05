@@ -22,7 +22,7 @@ public class TimetableController {
 	@Operation(summary = "시간표 보기 API", description = "")
 	@GetMapping(value = "info")
 	public ResponseEntity<Object> getTimetableInfo() {
-
+		
 		return ResponseEntity.ok().build();
 	}
 
