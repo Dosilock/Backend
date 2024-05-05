@@ -37,14 +37,7 @@ public class Period {
 
 	private LocalTime periodStartTime;
 
-	private LocalTime periodEndTime;
-
-	private LocalTime recessStartTime;
-
-	private LocalTime recessEndTime;
+	private int periodDuration;
 
 	private boolean attendanceRequired;
-
-	private int periodType;
-
 }

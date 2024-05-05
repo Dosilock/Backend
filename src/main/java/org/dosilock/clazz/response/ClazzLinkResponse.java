@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClazzResponse {
+public class ClazzLinkResponse {
 	private String clazzLink;
 }

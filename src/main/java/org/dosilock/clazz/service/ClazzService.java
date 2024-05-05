@@ -11,14 +11,14 @@ import org.dosilock.clazz.entity.ClazzPersonnel;
 import org.dosilock.clazz.repository.ClazzPersonnelRepository;
 import org.dosilock.clazz.repository.ClazzRepository;
 import org.dosilock.clazz.request.ClazzRequest;
+import org.dosilock.clazz.response.ClazzInfoResponse;
 import org.dosilock.clazz.response.ClazzListResponse;
-import org.dosilock.clazz.response.ClazzResponse;
+import org.dosilock.clazz.response.ClazzLinkResponse;
 import org.dosilock.timetable.entity.Day;
 import org.dosilock.timetable.entity.Period;
 import org.dosilock.timetable.entity.Timetable;
 import org.dosilock.timetable.repository.PeriodRepository;
 import org.dosilock.timetable.repository.TimetableRepository;
-import org.dosilock.timetable.request.PeriodRequest;
 import org.dosilock.utils.InviteLink;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +34,10 @@ public class ClazzService {
 	private final PeriodRepository periodRepository;
 	private final ClazzPersonnelRepository personnelRepository;
 	private final InviteLink inviteLink;
+	private final ClazzPersonnelRepository clazzPersonnelRepository;
 
 	@Transactional
-	public ClazzResponse addClazz(ClazzRequest clazzRequest) throws Exception {
+	public ClazzLinkResponse addClazz(ClazzRequest clazzRequest) throws Exception {
 		Clazz clazz = Clazz.builder()
 			.clazzTitle(clazzRequest.getClazzName())
 			.clazzDescription(clazzRequest.getClazzDescription())
@@ -49,14 +50,18 @@ public class ClazzService {
 
 		ClazzPersonnel clazzPersonnel = ClazzPersonnel.builder()
 			.clazz(clazz)
+			//현재 접속한 사용자 == 방장을 멤버에 저장
+			.roleStatus(0)
+			.acceptedStatus(0)
 			.createdAt(LocalDateTime.now())
 			.build();
 
 		personnelRepository.save(clazzPersonnel);
 
+		List<Integer> dayValues = clazzRequest.getTimetableRequest().getDays();
+
 		Timetable timetable = Timetable.builder()
 			.timetableName(clazzRequest.getTimetableRequest().getTimetableName())
-			.day(dayNames(clazzRequest.getTimetableRequest().getDays()))
 			.createdAt(LocalDateTime.now())
 			.build();
 
@@ -66,17 +71,14 @@ public class ClazzService {
 			Period period = Period.builder()
 				.periodName(per.getPeriodName())
 				.periodStartTime(LocalTime.parse(per.getPeriodStartTime()))
-				.periodEndTime(LocalTime.parse(per.getPeriodEndTime()))
-				.recessStartTime(LocalTime.parse(per.getRecessStartTime()))
-				.recessEndTime(LocalTime.parse(per.getRecessEndTime()))
+				.periodDuration(per.getPeriodDuration())
 				.attendanceRequired(per.isAttendanceRequired())
-				.periodType(per.getPeriodType())
 				.build();
 
 			periodRepository.save(period);
 		});
 
-		return new ClazzResponse(clazz.getClazzLink());
+		return new ClazzLinkResponse(clazz.getClazzLink());
 	}
 
 	//고민 사항 인트 배열로 요일을 요청 받았을 때 어떻게 디비에 저장할지 이넘이든 문자열이든
@@ -101,7 +103,41 @@ public class ClazzService {
 		}
 		return clazzListResponses;
 	}
+	//반 이름, 반 아이콘, 반 인원 수
+	public ClazzInfoResponse getClazzInfo(String link) {
+		long memberId = 1;
+		Clazz clazz = clazzRepository.findByClazzLink(link);
+		Long clazzId = clazz.getId();
+		ClazzInfoResponse clazzInfoResponse = new ClazzInfoResponse();
+		int memberCount = clazzPersonnelRepository.countByMemberIdAndClazzId(memberId, clazzId);
+		clazzInfoResponse.setMemberCount(memberCount);
+		clazzInfoResponse.setClazzName(clazz.getClazzTitle());
+		clazzInfoResponse.setClazzIcon(clazz.getClazzIcon());
+		return clazzInfoResponse;
+	}
 
-	public void getClazzLink() {
+	//가입 수락,,거절
+	public void checkAccept() {
+		//수락일 경우 1, 거절일 경우 0
+		boolean accept = false;
+		if(accept) {
+
+		} else {
+			throw new IllegalStateException("거절 완료");
+		}
+	}
+
+	//가입된 멤버인가
+	public void checkMember() {
+		long memberId = 1;
+		long clazzId = 1;
+		boolean checkMemberId = clazzPersonnelRepository.findByClazzIdAndMemberId(clazzId, memberId);
+		if(!checkMemberId) {
+			throw new IllegalStateException("가입된 멤버가 아니다.");
+		}
+	}
+
+	//영웅이랑 코드 맞추고 만들기
+	public void getMemberInfo() {
 	}
 }

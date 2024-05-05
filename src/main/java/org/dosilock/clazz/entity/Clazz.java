@@ -38,6 +38,8 @@ public class Clazz {
 
 	private String clazzDescription;
 
+	private String clazzIcon;
+
 	private String clazzLink;
 
 	private LocalDateTime createdAt;

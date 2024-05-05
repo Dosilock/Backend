@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ClazzRepository extends JpaRepository<Clazz, Long> {
 
 	List<Clazz> findByMemberId(Long memberId);
+
+	Clazz findByClazzLink(String link);
 }

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.dosilock.clazz.entity.Clazz;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

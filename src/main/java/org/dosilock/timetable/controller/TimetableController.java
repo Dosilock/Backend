@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,21 +34,21 @@ public class TimetableController {
 	}
 
 	@Operation(summary = "시간표 생성 API", description = "")
-	@PostMapping(value = "created")
+	@PostMapping()
 	public ResponseEntity<Object> getTimetalbeCreated() {
 
 		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "시간표 편집 API", description = "")
-	@PostMapping(value = "updated")
+	@PutMapping()
 	public ResponseEntity<Object> getTimetableUpdated() {
 
 		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "시간표 삭제 API", description = "")
-	@DeleteMapping(value = "deleted")
+	@DeleteMapping()
 	public ResponseEntity<Object> getTimetableDeleted() {
 
 		return ResponseEntity.ok().build();
