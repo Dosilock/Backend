@@ -2,8 +2,11 @@ package org.dosilock.member.entity;
 
 import java.time.LocalDateTime;
 
+import org.dosilock.clazz.entity.Clazz;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,10 +19,10 @@ public class ClazzBlackList {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// FK Entity 추가 시 적용 필요
-	private Long clazzId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Clazz clazz;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Member member;
 
 	@Column(nullable = false)
