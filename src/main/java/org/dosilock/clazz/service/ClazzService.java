@@ -96,9 +96,10 @@ public class ClazzService {
 			ClazzListResponse clazzListResponse = new ClazzListResponse();
 			clazzListResponse.setClazzName(clazz.getClazzTitle());
 			//clazz.getMember().getId().equals(memberId); 현재 접속한 사용자, 반 생성 사용자 비교 후 boolean 리턴
-			clazzListResponse.setMemberCount(
-				periodRepository.countByClazzAndMember(clazz, memberId)
-			);//memberId랑 클레스랑 넘겨줘서 카운트 새기
+			Long clazzId = clazz.getId();
+			// clazzListResponse.setMemberCount(
+			// 	periodRepository.countByClazzIdAndMemberId(clazzId, memberId)
+			// );//memberId랑 클레스랑 넘겨줘서 카운트 새기
 			clazzListResponses.add(clazzListResponse);
 		}
 		return clazzListResponses;
