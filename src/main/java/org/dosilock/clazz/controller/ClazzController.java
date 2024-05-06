@@ -6,6 +6,7 @@ import org.dosilock.clazz.request.ClazzRequest;
 import org.dosilock.clazz.response.ClazzInfoResponse;
 import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzLinkResponse;
+import org.dosilock.clazz.response.ClazzMemberInfoResponse;
 import org.dosilock.clazz.service.ClazzService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -37,8 +38,8 @@ public class ClazzController {
 
 	@Operation(summary = "반 목록 API", description = "반목록, 참여중인 인원 수, 나중에 실시간으로 현재 접속자 수")
 	@GetMapping(value = "list")
-	public ResponseEntity<List<ClazzListResponse>> getClazzList(Long memberId) throws Exception {
-		List<ClazzListResponse> clazzListResponses = clazzService.getClazzList(memberId);
+	public ResponseEntity<List<ClazzListResponse>> getClazzList() throws Exception {
+		List<ClazzListResponse> clazzListResponses = clazzService.getClazzList();
 		return ResponseEntity.ok(clazzListResponses);
 	}
 
@@ -49,24 +50,24 @@ public class ClazzController {
 		return ResponseEntity.ok(clazzInfoResponse);
 	}
 
-	@Operation(summary = "가입된 멤버 체크 API", description = "0 - 방장, 1 - 멤버, 2 - 가입 승인 중, 블랙리스트는 테이블에서 유효성 검사")
+	@Operation(summary = "(멤버) 반 가입 신청 API", description = "0 - 방장, 1 - 멤버, 2 - 가입 승인 중 반 가입 조건을 확인후 안되면 에러 리턴")
 	@PostMapping(value = "check")
-	public ResponseEntity<Void> checkMember() {
-		clazzService.checkMember();
+	public ResponseEntity<Void> checkMember(@RequestParam String link) throws Exception {
+		clazzService.checkMemberAndInvete(link);
 		return ResponseEntity.ok().build();
 	}
 
-	@Operation(summary = "반 가입 수락/거절 API", description = "방장이 가입 신청을 한 멤버를 수락/거절")
+	@Operation(summary = "(반장)반 가입 수락/거절 API", description = "방장이 가입 신청을 한 멤버를 수락/거절")
 	@PostMapping(value = "join")
-	public ResponseEntity<Void> getInvite() {
-		clazzService.checkAccept();
+	public ResponseEntity<Void> getInvite(@RequestParam String link) {
+		clazzService.checkAccept(link);
 		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "반 멤버 가져오기 API", description = "")
 	@GetMapping(value = "member")
-	public ResponseEntity<Object> getMemberInfo() {
-		clazzService.getMemberInfo();
-		return ResponseEntity.ok().build();
+	public ResponseEntity<List<ClazzMemberInfoResponse>> getMemberInfo(@RequestParam String link) {
+		List<ClazzMemberInfoResponse> memberInfoResponseList = clazzService.getMemberInfo(link);
+		return ResponseEntity.ok(memberInfoResponseList);
 	}
 }

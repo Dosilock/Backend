@@ -38,9 +38,7 @@ public class ClazzPersonnel {
 	@JoinColumn(name = "member_id", referencedColumnName = "id")
 	private Member member;
 
-	private int roleStatus;//방장/멤버
-
-	private int acceptedStatus;//가입 수락/거절
+	private int roleStatus;//방장/멤버/가입진행중/거절(삭제)
 
 	private LocalDateTime createdAt;
 }

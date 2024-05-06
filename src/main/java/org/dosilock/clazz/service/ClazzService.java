@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.dosilock.clazz.entity.Clazz;
@@ -14,9 +15,9 @@ import org.dosilock.clazz.request.ClazzRequest;
 import org.dosilock.clazz.response.ClazzInfoResponse;
 import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzLinkResponse;
+import org.dosilock.clazz.response.ClazzMemberInfoResponse;
 import org.dosilock.member.entity.Member;
 import org.dosilock.member.repository.MemberRepository;
-import org.dosilock.timetable.entity.Day;
 import org.dosilock.timetable.entity.Period;
 import org.dosilock.timetable.entity.Timetable;
 import org.dosilock.timetable.repository.PeriodRepository;
@@ -52,7 +53,7 @@ public class ClazzService {
 			.clazzDescription(clazzRequest.getClazzDescription())
 			.member(member())
 			.clazzIcon(clazzRequest.getClazzIcon())
-			.clazzLink("https://gongsilock.com/" + inviteLink.createInveteLink())
+			.clazzLink(inviteLink.createInveteLink())
 			.createdAt(LocalDateTime.now())
 			.updatedAt(LocalDateTime.now())
 			.build();
@@ -63,7 +64,6 @@ public class ClazzService {
 			.clazz(getClazz)
 			.member(member())
 			.roleStatus(0)
-			.acceptedStatus(0)
 			.createdAt(LocalDateTime.now())
 			.build();
 
@@ -98,64 +98,86 @@ public class ClazzService {
 		return new ClazzLinkResponse(clazz.getClazzLink());
 	}
 
-	//고민 사항 인트 배열로 요일을 요청 받았을 때 어떻게 디비에 저장할지 이넘이든 문자열이든
-
-	public String convertDaysToString(List<Day> dayList) {
-		return dayList.stream()
-			.map(Enum::name)
-			.collect(Collectors.joining(", "));
-	}
-
-	public List<ClazzListResponse> getClazzList(Long memberId) throws Exception {
+	@Transactional
+	public List<ClazzListResponse> getClazzList() throws Exception {
+		Long memberId = member().getId();
 		List<Clazz> clazzes = clazzRepository.findByMemberId(memberId);
 		List<ClazzListResponse> clazzListResponses = new ArrayList<>();
 		for(Clazz clazz : clazzes) {
+			Long clazzId = clazz.getId();
 			ClazzListResponse clazzListResponse = new ClazzListResponse();
 			clazzListResponse.setClazzName(clazz.getClazzTitle());
-			//clazz.getMember().getId().equals(memberId); 현재 접속한 사용자, 반 생성 사용자 비교 후 boolean 리턴
-			Long clazzId = clazz.getId();
-			// clazzListResponse.setMemberCount(
-			// 	periodRepository.countByClazzIdAndMemberId(clazzId, memberId)
-			// );//memberId랑 클레스랑 넘겨줘서 카운트 새기
+			Long makeId = clazz.getMember().getId();
+			if(Objects.equals(makeId, memberId)) {
+				clazzListResponse.setOwned(true);
+			} else {
+				clazzListResponse.setOwned(false);
+			}
+			int memberCount = clazzPersonnelRepository.countByClazzId(clazzId);
+			clazzListResponse.setMemberCount(memberCount);
 			clazzListResponses.add(clazzListResponse);
 		}
 		return clazzListResponses;
 	}
 	//반 이름, 반 아이콘, 반 인원 수
 	public ClazzInfoResponse getClazzInfo(String link) {
-		long memberId = 1;
+		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		Long clazzId = clazz.getId();
 		ClazzInfoResponse clazzInfoResponse = new ClazzInfoResponse();
-		int memberCount = clazzPersonnelRepository.countByMemberIdAndClazzId(memberId, clazzId);
+		int memberCount = clazzPersonnelRepository.countByClazzId(clazzId);
 		clazzInfoResponse.setMemberCount(memberCount);
 		clazzInfoResponse.setClazzName(clazz.getClazzTitle());
 		clazzInfoResponse.setClazzIcon(clazz.getClazzIcon());
 		return clazzInfoResponse;
 	}
 
-	//가입 수락,,거절
-	public void checkAccept() {
-		//수락일 경우 1, 거절일 경우 0
-		boolean accept = false;
-		if(accept) {
+	//가입 수락,거절 방장이어야하고
+	public void checkAccept(String link) {
+		Long memberId = member().getId();
+		Clazz clazz = clazzRepository.findByClazzLink(link);
+		if(Objects.equals(memberId, clazz.getMember().getId())) {
 
 		} else {
-			throw new IllegalStateException("거절 완료");
+			throw new IllegalStateException("방장이 아님.");
 		}
 	}
 
-	//가입된 멤버인가
-	public void checkMember() {
-		long memberId = 1;
-		long clazzId = 1;
-		boolean checkMemberId = clazzPersonnelRepository.findByClazzIdAndMemberId(clazzId, memberId);
-		if(!checkMemberId) {
-			throw new IllegalStateException("가입된 멤버가 아니다.");
+	//가입된 멤버인가 체크 후 가입 신청 처리
+	//방장인가? 블랙리스트인가? 가입 진행중인가? 이미 멤버인가?
+	public void checkMemberAndInvete(String link) throws Exception {
+		Long memberId = member().getId();
+		Clazz clazz = clazzRepository.findByClazzLink(link);
+		Long clazzId = clazz.getId();
+		ClazzPersonnel clazzPersonnel = clazzPersonnelRepository.findByClazzIdAndMemberId(clazzId, memberId);
+		if(Objects.equals(clazz.getMember().getId(), memberId)) {
+			throw new IllegalStateException("방장입니다.");
+		} else if(Objects.equals(clazzPersonnel.getRoleStatus(), 1)) {
+			throw new IllegalStateException("이미 멤버입니다.");
+		} else if(Objects.equals(clazzPersonnel.getRoleStatus(), 2)) {
+			throw new IllegalStateException("가입 진행중입니다.");
+		} else {
+			ClazzPersonnel inviteClazz = new ClazzPersonnel();
+			inviteClazz.setRoleStatus(2);
+			inviteClazz.setClazz(clazz);
+			inviteClazz.setMember(member());
+			inviteClazz.setCreatedAt(LocalDateTime.now());
+			clazzPersonnelRepository.save(inviteClazz);
 		}
 	}
 
-	//영웅이랑 코드 맞추고 만들기
-	public void getMemberInfo() {
+	//닉네임, 프로필사진??
+	public List<ClazzMemberInfoResponse> getMemberInfo(String link) {
+		List<ClazzMemberInfoResponse> memberInfoResponses = new ArrayList<>();
+		Clazz clazz = clazzRepository.findByClazzLink(link);
+		Long clazzId = clazz.getId();
+		List<ClazzPersonnel> clazzPersonnelList = clazzPersonnelRepository.findByClazzId(clazzId);
+		for(ClazzPersonnel clazzPersonnel : clazzPersonnelList) {
+			ClazzMemberInfoResponse clazzMemberInfoResponse = new ClazzMemberInfoResponse();
+			clazzMemberInfoResponse.setNinkname(clazzPersonnel.getMember().getNickname());
+			clazzMemberInfoResponse.setProfileImg(clazzPersonnel.getMember().getProfileImg());
+			memberInfoResponses.add(clazzMemberInfoResponse);
+		}
+		return memberInfoResponses;
 	}
 }
