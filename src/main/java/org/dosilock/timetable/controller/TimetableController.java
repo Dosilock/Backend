@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +43,7 @@ public class TimetableController {
 	}
 
 	@Operation(summary = "시간표 편집 API", description = "시간표를 편집 합니다.")
-	@PutMapping(value = "modify/{timetableId}")
+	@PostMapping(value = "modify/{timetableId}")
 	public ResponseEntity<Object> updateTimetable(@RequestBody TimetableRequest timetableRequest,
 		@PathVariable Long timetableId) {
 		timetableService.updateTimetable(timetableRequest, timetableId);
