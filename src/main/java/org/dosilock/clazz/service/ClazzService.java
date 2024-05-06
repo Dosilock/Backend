@@ -136,8 +136,16 @@ public class ClazzService {
 	public void checkAccept(String link, Boolean isAccepted) throws Exception {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
+		Long clazzId = clazz.getId();
 		if(Objects.equals(memberId, clazz.getMember().getId())) {
-
+			ClazzPersonnel clazzPersonnel = new ClazzPersonnel();
+			if(isAccepted) {
+				clazzPersonnel.setRoleStatus(1);
+				clazzPersonnelRepository.save(clazzPersonnel);
+			} else {
+				clazzPersonnel.setRoleStatus(3);
+				clazzPersonnelRepository.save(clazzPersonnel);
+			}
 		} else {
 			throw new IllegalStateException("방장이 아님.");
 		}
@@ -156,6 +164,8 @@ public class ClazzService {
 			throw new IllegalStateException("이미 멤버입니다.");
 		} else if(Objects.equals(clazzPersonnel.getRoleStatus(), 2)) {
 			throw new IllegalStateException("가입 진행중입니다.");
+		} else if(Objects.equals(clazzPersonnel.getRoleStatus(), 3)) {
+			throw new IllegalStateException("거절된 상태입니다.");
 		} else {
 			ClazzPersonnel inviteClazz = new ClazzPersonnel();
 			inviteClazz.setRoleStatus(2);
