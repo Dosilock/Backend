@@ -13,7 +13,6 @@ import lombok.Getter;
 public class MemberRedis {
 	@Id
 	private String email;
-	private String userData;
 	@Indexed
 	private String link;
 }

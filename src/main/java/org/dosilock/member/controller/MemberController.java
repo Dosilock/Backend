@@ -3,12 +3,11 @@ package org.dosilock.member.controller;
 import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.request.RequestMemberDto;
+import org.dosilock.member.request.RequestMemberEmailDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.member.service.v1.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,15 +39,15 @@ public class MemberController {
 
 	@Operation(summary = "회원가입 API", description = "이메일 회원가입")
 	@PostMapping(value = "signup")
-	public ResponseEntity<Void> signup(@Valid @RequestBody RequestMemberDto requestMemberDto) {
-		memberService.signup(requestMemberDto);
+	public ResponseEntity<Void> signup(@Valid @RequestBody RequestMemberEmailDto requestMemberEmailDto) {
+		memberService.signup(requestMemberEmailDto);
 		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "회원가입 승인 이메일 전달 API", description = "이메일 회원가입 승인 이메일 전달")
-	@GetMapping(value = "signup/link/{linkCode}")
-	public ResponseEntity<Void> confirmEmailVerification(@PathVariable String linkCode) {
-		memberService.confirmEmailVerification(linkCode);
+	@PostMapping(value = "signup/confirm")
+	public ResponseEntity<Void> confirmEmailVerification(@Valid @RequestBody RequestMemberDto requestMemberDto) {
+		memberService.confirmEmailVerification(requestMemberDto);
 		return ResponseEntity.ok().build();
 	}
 
@@ -60,15 +59,15 @@ public class MemberController {
 
 	@Operation(summary = "비밀번호 변경 승인 이메일 요청 API", description = "비밀번호 변경을 위한 이메일 승인 요청")
 	@PostMapping(value = "password")
-	public ResponseEntity<Void> changePassword(@RequestBody RequestMemberDto requestMemberDto) {
-		memberService.changePassword(requestMemberDto);
+	public ResponseEntity<Void> changePassword() {
+		memberService.changePassword();
 		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "비밀번호 변경 이메일 요청 API", description = "비밀번호 변경 이메일 승인 요청")
-	@PutMapping(value = "password/link/{linkCode}")
-	public ResponseEntity<Void> confirmChangePassword(@PathVariable String linkCode) {
-		memberService.confirmChangePassword(linkCode);
+	@PutMapping(value = "password/confirm")
+	public ResponseEntity<Void> confirmChangePassword(@RequestBody RequestMemberDto requestMemberDto) {
+		memberService.confirmChangePassword(requestMemberDto);
 		return ResponseEntity.ok().build();
 	}
 }

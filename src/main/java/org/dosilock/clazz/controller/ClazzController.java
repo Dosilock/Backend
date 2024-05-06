@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.dosilock.clazz.request.ClazzRequest;
 import org.dosilock.clazz.response.ClazzInfoResponse;
-import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzLinkResponse;
+import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzMemberInfoResponse;
 import org.dosilock.clazz.service.ClazzService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,29 +45,31 @@ public class ClazzController {
 	}
 
 	@Operation(summary = "반 정보 API", description = "반에 대한 정보를 반환")
-	@GetMapping(value = "info")
-	public ResponseEntity<ClazzInfoResponse> getClazzInfo(@RequestParam(value = "clazzId") String link) throws Exception {
-		ClazzInfoResponse clazzInfoResponse =  clazzService.getClazzInfo(link);
+	@GetMapping(value = "info/link/{clazzId}")
+	public ResponseEntity<ClazzInfoResponse> getClazzInfo(@PathVariable(value = "clazzId") String link) throws
+		Exception {
+		ClazzInfoResponse clazzInfoResponse = clazzService.getClazzInfo(link);
 		return ResponseEntity.ok(clazzInfoResponse);
 	}
 
 	@Operation(summary = "(멤버) 반 가입 신청 API", description = "0 - 방장, 1 - 멤버, 2 - 가입 승인 중 반 가입 조건을 확인후 안되면 에러 리턴")
-	@PostMapping(value = "check")
-	public ResponseEntity<Void> checkMember(@RequestParam(value = "clazzId") String link) throws Exception {
+	@PostMapping(value = "check/link/{clazzId}")
+	public ResponseEntity<Void> checkMember(@PathVariable(value = "clazzId") String link) throws Exception {
 		clazzService.checkMemberAndInvete(link);
 		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "(반장)반 가입 수락/거절 API", description = "방장이 가입 신청을 한 멤버를 수락/거절")
-	@PostMapping(value = "join")
-	public ResponseEntity<Void> getInvite(@RequestParam(value = "clazzId") String link, @RequestParam(value = "isAccepted") Boolean isAccepted) throws Exception {
+	@PostMapping(value = "join/link/{clazzId}")
+	public ResponseEntity<Void> getInvite(@PathVariable(value = "clazzId") String link,
+		@RequestParam(value = "isAccepted") Boolean isAccepted) throws Exception {
 		clazzService.checkAccept(link, isAccepted);
 		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "반 멤버 가져오기 API", description = "")
-	@GetMapping(value = "member")
-	public ResponseEntity<List<ClazzMemberInfoResponse>> getMemberInfo(@RequestParam(value = "clazzId") String link) {
+	@GetMapping(value = "member/link/{clazzId}")
+	public ResponseEntity<List<ClazzMemberInfoResponse>> getMemberInfo(@PathVariable(value = "clazzId") String link) {
 		List<ClazzMemberInfoResponse> memberInfoResponseList = clazzService.getMemberInfo(link);
 		return ResponseEntity.ok(memberInfoResponseList);
 	}
