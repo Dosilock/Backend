@@ -7,7 +7,6 @@ import org.dosilock.timetable.repository.PeriodRepository;
 import org.dosilock.timetable.repository.TimetableRepository;
 import org.dosilock.timetable.response.PeriodResponse;
 import org.dosilock.timetable.response.TimetableResponse;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public class TimetableService {
 	public TimetableResponse getTimetableInfo(Long timetableId) {
 
 		Timetable timetable = timetableRepository.findById(timetableId)
-			.orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없음."));
+			.orElseThrow(() -> new NullPointerException("없는 시간표 입니다."));
 
 		TimetableResponse timetableResponse = new TimetableResponse(timetable);
 
