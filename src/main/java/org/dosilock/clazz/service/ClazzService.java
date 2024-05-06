@@ -12,8 +12,8 @@ import org.dosilock.clazz.repository.ClazzPersonnelRepository;
 import org.dosilock.clazz.repository.ClazzRepository;
 import org.dosilock.clazz.request.ClazzRequest;
 import org.dosilock.clazz.response.ClazzInfoResponse;
-import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzLinkResponse;
+import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.member.entity.Member;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.timetable.entity.Day;
@@ -69,7 +69,7 @@ public class ClazzService {
 
 		personnelRepository.save(clazzPersonnel);
 
-		List<Integer> dayValues = clazzRequest.getTimetableRequest().getDays();
+		List<Integer> dayValues = clazzRequest.getTimetableRequest().getTimetableDays();
 		String days = dayValues.stream()
 			.map(String::valueOf)
 			.collect(Collectors.joining(","));
@@ -109,7 +109,7 @@ public class ClazzService {
 	public List<ClazzListResponse> getClazzList(Long memberId) throws Exception {
 		List<Clazz> clazzes = clazzRepository.findByMemberId(memberId);
 		List<ClazzListResponse> clazzListResponses = new ArrayList<>();
-		for(Clazz clazz : clazzes) {
+		for (Clazz clazz : clazzes) {
 			ClazzListResponse clazzListResponse = new ClazzListResponse();
 			clazzListResponse.setClazzName(clazz.getClazzTitle());
 			//clazz.getMember().getId().equals(memberId); 현재 접속한 사용자, 반 생성 사용자 비교 후 boolean 리턴
@@ -121,6 +121,7 @@ public class ClazzService {
 		}
 		return clazzListResponses;
 	}
+
 	//반 이름, 반 아이콘, 반 인원 수
 	public ClazzInfoResponse getClazzInfo(String link) {
 		long memberId = 1;
@@ -138,7 +139,7 @@ public class ClazzService {
 	public void checkAccept() {
 		//수락일 경우 1, 거절일 경우 0
 		boolean accept = false;
-		if(accept) {
+		if (accept) {
 
 		} else {
 			throw new IllegalStateException("거절 완료");
@@ -150,7 +151,7 @@ public class ClazzService {
 		long memberId = 1;
 		long clazzId = 1;
 		boolean checkMemberId = clazzPersonnelRepository.findByClazzIdAndMemberId(clazzId, memberId);
-		if(!checkMemberId) {
+		if (!checkMemberId) {
 			throw new IllegalStateException("가입된 멤버가 아니다.");
 		}
 	}

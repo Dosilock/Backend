@@ -27,11 +27,11 @@ public class TimetableService {
 		TimetableResponse timetableResponse = new TimetableResponse(timetable);
 
 		timetableResponse.setPeriodRequests(
-			periodRepository.findByTimeTableId(timetableId).stream().map(PeriodResponse::new).toList());
+			periodRepository.findByTimetableId(timetableId).stream().map(PeriodResponse::new).toList());
 
 		timetableResponse.setTimetableDays(
 			Arrays.stream(timetable.getTimetableDays().split(",")).map(Integer::parseInt).toList());
-		
+
 		return timetableResponse;
 	}
 }
