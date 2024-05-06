@@ -133,7 +133,7 @@ public class ClazzService {
 	}
 
 	//가입 수락,거절 방장이어야하고
-	public void checkAccept(String link) {
+	public void checkAccept(String link, Boolean isAccepted) throws Exception {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		if(Objects.equals(memberId, clazz.getMember().getId())) {
