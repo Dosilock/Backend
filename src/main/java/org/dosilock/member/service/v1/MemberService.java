@@ -8,6 +8,7 @@ import org.dosilock.member.redis.MemberRedis;
 import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.member.request.RequestMemberDto;
+import org.dosilock.member.request.RequestMemberEmailDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.utils.EmailUtils;
 import org.dosilock.utils.GetMember;
@@ -21,9 +22,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,32 +62,24 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional
-	public void signup(RequestMemberDto requestMemberDto) {
-		requestMemberDto.encodePassword(passwordEncoder::encode);
-
+	public void signup(RequestMemberEmailDto requestMemberEmailDto) {
 		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
-		emailUtils.sendSignupMessage(requestMemberDto.getEmail(), randomLinkCode);
+		emailUtils.sendSignupMessage(requestMemberEmailDto.getEmail(), randomLinkCode);
 
-		try {
-			MemberRedis memberRedis = MemberRedis.builder()
-				.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
-				.link(randomLinkCode)
-				.build();
-			memberRedisRepository.save(memberRedis);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
+		MemberRedis memberRedis = MemberRedis.builder()
+			.email(requestMemberEmailDto.getEmail())
+			.link(randomLinkCode)
+			.build();
+		memberRedisRepository.save(memberRedis);
 	}
 
 	@Transactional
-	public void confirmEmailVerification(String link) {
-		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
-		try {
-			Member member = new Member(new ObjectMapper().readValue(memberRedis.getUserData(), RequestMemberDto.class));
-			memberRepository.save(member);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
+	public void confirmEmailVerification(RequestMemberDto requestMemberDto) {
+		MemberRedis memberRedis = memberRedisRepository.findByLink(requestMemberDto.getLink());
+		requestMemberDto.setEmail(memberRedis.getEmail());
+		requestMemberDto.encodePassword(passwordEncoder::encode);
+		Member member = new Member(requestMemberDto);
+		memberRepository.save(member);
 	}
 
 	@Transactional(readOnly = true)
@@ -98,30 +88,23 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional
-	public void changePassword(RequestMemberDto requestMemberDto) {
+	public void changePassword() {
 		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
 		emailUtils.sendChangePasswordMessage(member().getEmail(), randomLinkCode);
-		try {
-			MemberRedis memberRedis = MemberRedis.builder()
-				.userData(new ObjectMapper().writeValueAsString(requestMemberDto))
-				.link(randomLinkCode)
-				.build();
-			memberRedisRepository.save(memberRedis);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
+
+		MemberRedis memberRedis = MemberRedis.builder()
+			.email(member().getEmail())
+			.link(randomLinkCode)
+			.build();
+		memberRedisRepository.save(memberRedis);
 	}
 
 	@Transactional
-	public void confirmChangePassword(String link) {
-		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
-		try {
-			RequestMemberDto requestMemberDto = new ObjectMapper().readValue(memberRedis.getUserData(),
-				RequestMemberDto.class);
+	public void confirmChangePassword(RequestMemberDto requestMemberDto) {
+		MemberRedis memberRedis = memberRedisRepository.findByLink(requestMemberDto.getLink());
+		Member member = memberRepository.findByEmail(memberRedis.getEmail())
+			.orElseThrow(() -> new UsernameNotFoundException("회원을 못찾음."));
 
-			member().updatePassword(requestMemberDto.getPassword(), passwordEncoder::encode);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
+		member.updatePassword(requestMemberDto.getPassword(), passwordEncoder::encode);
 	}
 }
