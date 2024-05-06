@@ -1,5 +1,10 @@
 server:
   port: 8080
+  ssl:
+    key-store: file:/root/dassda.today_20240225AE947.pfx
+    key-store-type: PKCS12
+    key-store-password: q9upw7og
+    key-alias: dassda.today
 
 spring:
   application:
