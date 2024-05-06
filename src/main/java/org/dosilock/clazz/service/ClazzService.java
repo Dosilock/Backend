@@ -13,8 +13,8 @@ import org.dosilock.clazz.repository.ClazzPersonnelRepository;
 import org.dosilock.clazz.repository.ClazzRepository;
 import org.dosilock.clazz.request.ClazzRequest;
 import org.dosilock.clazz.response.ClazzInfoResponse;
-import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzLinkResponse;
+import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzMemberInfoResponse;
 import org.dosilock.member.entity.Member;
 import org.dosilock.member.repository.MemberRepository;
@@ -25,8 +25,8 @@ import org.dosilock.timetable.repository.TimetableRepository;
 import org.dosilock.utils.GetMember;
 import org.dosilock.utils.InviteLink;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -98,17 +98,17 @@ public class ClazzService {
 		return new ClazzLinkResponse(clazz.getClazzLink());
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<ClazzListResponse> getClazzList() throws Exception {
 		Long memberId = member().getId();
 		List<Clazz> clazzes = clazzRepository.findByMemberId(memberId);
 		List<ClazzListResponse> clazzListResponses = new ArrayList<>();
-		for(Clazz clazz : clazzes) {
+		for (Clazz clazz : clazzes) {
 			Long clazzId = clazz.getId();
 			ClazzListResponse clazzListResponse = new ClazzListResponse();
 			clazzListResponse.setClazzName(clazz.getClazzTitle());
 			Long makeId = clazz.getMember().getId();
-			if(Objects.equals(makeId, memberId)) {
+			if (Objects.equals(makeId, memberId)) {
 				clazzListResponse.setOwned(true);
 			} else {
 				clazzListResponse.setOwned(false);
@@ -119,7 +119,9 @@ public class ClazzService {
 		}
 		return clazzListResponses;
 	}
+
 	//반 이름, 반 아이콘, 반 인원 수
+	@Transactional(readOnly = true)
 	public ClazzInfoResponse getClazzInfo(String link) {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
@@ -133,13 +135,14 @@ public class ClazzService {
 	}
 
 	//가입 수락,거절 방장이어야하고
+	@Transactional
 	public void checkAccept(String link, Boolean isAccepted) throws Exception {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		Long clazzId = clazz.getId();
-		if(Objects.equals(memberId, clazz.getMember().getId())) {
+		if (Objects.equals(memberId, clazz.getMember().getId())) {
 			ClazzPersonnel clazzPersonnel = new ClazzPersonnel();
-			if(isAccepted) {
+			if (isAccepted) {
 				clazzPersonnel.setRoleStatus(1);
 				clazzPersonnelRepository.save(clazzPersonnel);
 			} else {
@@ -153,18 +156,19 @@ public class ClazzService {
 
 	//가입된 멤버인가 체크 후 가입 신청 처리
 	//방장인가? 블랙리스트인가? 가입 진행중인가? 이미 멤버인가?
+	@Transactional
 	public void checkMemberAndInvete(String link) throws Exception {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		Long clazzId = clazz.getId();
 		ClazzPersonnel clazzPersonnel = clazzPersonnelRepository.findByClazzIdAndMemberId(clazzId, memberId);
-		if(Objects.equals(clazz.getMember().getId(), memberId)) {
+		if (Objects.equals(clazz.getMember().getId(), memberId)) {
 			throw new IllegalStateException("방장입니다.");
-		} else if(Objects.equals(clazzPersonnel.getRoleStatus(), 1)) {
+		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 1)) {
 			throw new IllegalStateException("이미 멤버입니다.");
-		} else if(Objects.equals(clazzPersonnel.getRoleStatus(), 2)) {
+		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 2)) {
 			throw new IllegalStateException("가입 진행중입니다.");
-		} else if(Objects.equals(clazzPersonnel.getRoleStatus(), 3)) {
+		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 3)) {
 			throw new IllegalStateException("거절된 상태입니다.");
 		} else {
 			ClazzPersonnel inviteClazz = new ClazzPersonnel();
@@ -177,12 +181,13 @@ public class ClazzService {
 	}
 
 	//닉네임, 프로필사진??
+	@Transactional
 	public List<ClazzMemberInfoResponse> getMemberInfo(String link) {
 		List<ClazzMemberInfoResponse> memberInfoResponses = new ArrayList<>();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		Long clazzId = clazz.getId();
 		List<ClazzPersonnel> clazzPersonnelList = clazzPersonnelRepository.findByClazzId(clazzId);
-		for(ClazzPersonnel clazzPersonnel : clazzPersonnelList) {
+		for (ClazzPersonnel clazzPersonnel : clazzPersonnelList) {
 			ClazzMemberInfoResponse clazzMemberInfoResponse = new ClazzMemberInfoResponse();
 			clazzMemberInfoResponse.setNinkname(clazzPersonnel.getMember().getNickname());
 			clazzMemberInfoResponse.setProfileImg(clazzPersonnel.getMember().getProfileImg());
