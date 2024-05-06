@@ -69,7 +69,7 @@ public class ClazzService {
 
 		personnelRepository.save(clazzPersonnel);
 
-		List<Integer> dayValues = clazzRequest.getTimetableRequest().getDays();
+		List<Integer> dayValues = clazzRequest.getTimetableRequest().getTimetableDays();
 		String days = dayValues.stream()
 			.map(String::valueOf)
 			.collect(Collectors.joining(","));
