@@ -46,6 +46,7 @@ public class TimetableService {
 
 	@Transactional
 	public void deleteTimetable(Long timetableId) {
+		periodRepository.deleteByTimetableId(timetableId);
 		timetableRepository.deleteById(timetableId);
 	}
 
@@ -63,8 +64,8 @@ public class TimetableService {
 			.timetableDays(days)
 			.createdAt(LocalDateTime.now())
 			.build();
-		timetableRepository.deleteById(timetableId);
 		periodRepository.deleteByTimetableId(timetableId);
+		timetableRepository.deleteById(timetableId);
 
 		Timetable getTimetable = timetableRepository.save(timetable);
 
