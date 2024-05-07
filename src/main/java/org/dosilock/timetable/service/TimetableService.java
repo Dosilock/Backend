@@ -34,9 +34,8 @@ public class TimetableService {
 			.orElseThrow(() -> new NullPointerException("없는 시간표 입니다."));
 
 		TimetableResponse timetableResponse = new TimetableResponse(timetable);
-
-		timetableResponse.setPeriodRequests(
-			periodRepository.findByTimetableId(timetableId).stream().map(PeriodResponse::new).toList());
+		timetableResponse.setPeriodResponses(
+			periodRepository.findAllByTimetableId(timetableId).stream().map(PeriodResponse::new).toList());
 
 		timetableResponse.setTimetableDays(
 			Arrays.stream(timetable.getTimetableDays().split(",")).map(Integer::parseInt).toList());

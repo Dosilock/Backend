@@ -13,11 +13,11 @@ import lombok.Setter;
 public class TimetableResponse {
 	private String timetableName;
 	private List<Integer> timetableDays;
-	private List<PeriodResponse> periodRequests;
+	private List<PeriodResponse> periodResponses;
 
 	public TimetableResponse(Timetable timetable) {
 		this.timetableName = timetable.getTimetableName();
 		this.timetableDays = new ArrayList<>();
-		this.periodRequests = new ArrayList<>();
+		this.periodResponses = new ArrayList<>();
 	}
 }
