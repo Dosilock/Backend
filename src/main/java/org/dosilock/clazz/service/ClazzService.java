@@ -161,7 +161,16 @@ public class ClazzService {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		Long clazzId = clazz.getId();
-		ClazzPersonnel clazzPersonnel = clazzPersonnelRepository.findByClazzIdAndMemberId(clazzId, memberId);
+		ClazzPersonnel clazzPersonnel = clazzPersonnelRepository.findByClazzIdAndMemberId(clazzId, memberId)
+			.orElseGet(() -> {
+				ClazzPersonnel inviteClazz = new ClazzPersonnel();
+				inviteClazz.setRoleStatus(2);
+				inviteClazz.setClazz(clazz);
+				inviteClazz.setMember(member());
+				inviteClazz.setCreatedAt(LocalDateTime.now());
+				return clazzPersonnelRepository.save(inviteClazz);
+			});
+
 		if (Objects.equals(clazz.getMember().getId(), memberId)) {
 			throw new IllegalStateException("방장입니다.");
 		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 1)) {
@@ -170,13 +179,6 @@ public class ClazzService {
 			throw new IllegalStateException("가입 진행중입니다.");
 		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 3)) {
 			throw new IllegalStateException("거절된 상태입니다.");
-		} else {
-			ClazzPersonnel inviteClazz = new ClazzPersonnel();
-			inviteClazz.setRoleStatus(2);
-			inviteClazz.setClazz(clazz);
-			inviteClazz.setMember(member());
-			inviteClazz.setCreatedAt(LocalDateTime.now());
-			clazzPersonnelRepository.save(inviteClazz);
 		}
 	}
 
