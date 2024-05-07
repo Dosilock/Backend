@@ -51,6 +51,7 @@ public class TimetableService {
 
 	@Transactional
 	public void updateTimetable(TimetableRequest timetableRequest, Long timetableId) {
+
 		List<Integer> dayValues = timetableRequest.getTimetableDays();
 		String days = dayValues.stream()
 			.map(String::valueOf)
@@ -62,6 +63,8 @@ public class TimetableService {
 			.timetableDays(days)
 			.createdAt(LocalDateTime.now())
 			.build();
+		timetableRepository.deleteById(timetableId);
+		periodRepository.deleteByTimetableId(timetableId);
 
 		Timetable getTimetable = timetableRepository.save(timetable);
 
