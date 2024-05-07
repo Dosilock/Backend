@@ -20,7 +20,7 @@ public class RequestMemberDto {
 	@NotNull(message = "별명을 작성해주세요.")
 	private String nickname;
 	private String profileImg;
-	@NotNull(message = "이메일 확인이 안됐습니다.")
+	@NotNull(message = "링크를 작성해주세요.")
 	private String link;
 
 	public void encodePassword(Function<String, String> passwordEncoder) {

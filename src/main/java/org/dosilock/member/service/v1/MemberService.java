@@ -91,12 +91,12 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional
-	public void changePassword() {
+	public void changePassword(RequestMemberEmailDto requestMemberEmailDto) {
 		String randomLinkCode = inviteLink.createInveteLink();
-		emailUtils.sendChangePasswordMessage(member().getEmail(), randomLinkCode);
+		emailUtils.sendChangePasswordMessage(requestMemberEmailDto.getEmail(), randomLinkCode);
 
 		MemberRedis memberRedis = MemberRedis.builder()
-			.email(member().getEmail())
+			.email(requestMemberEmailDto.getEmail())
 			.link(randomLinkCode)
 			.build();
 		memberRedisRepository.save(memberRedis);
