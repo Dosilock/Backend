@@ -59,8 +59,8 @@ public class MemberController {
 
 	@Operation(summary = "비밀번호 변경 승인 이메일 요청 API", description = "비밀번호 변경을 위한 이메일 승인 요청")
 	@PostMapping(value = "password")
-	public ResponseEntity<Void> changePassword() {
-		memberService.changePassword();
+	public ResponseEntity<Void> changePassword(@RequestBody RequestMemberEmailDto requestMemberEmailDto) {
+		memberService.changePassword(requestMemberEmailDto);
 		return ResponseEntity.ok().build();
 	}
 
