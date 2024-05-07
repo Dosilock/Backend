@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtTokenProvider jwtTokenProvider;
 	private static final String[] WHITELIST = {
 		"/api/v1/signin", // 로그인
+		"/login/**", // OAuth2 로그인
 		"/api/v1/signup/**", // 회원가입
 		"/index.html" // JWT 임시 전체 허용
 	};
