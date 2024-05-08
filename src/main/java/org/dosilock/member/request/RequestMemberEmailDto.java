@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
+@Schema(description = "이메일 DTO")
 public class RequestMemberEmailDto {
 
 	@Schema(description = "이메일", required = true)

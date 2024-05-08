@@ -9,6 +9,7 @@ import lombok.Data;
 
 @Data
 @Builder
+@Schema(description = "회원 가입을 위한 요청 데이터")
 public class RequestMemberDto {
 
 	@Schema(description = "이메일")
