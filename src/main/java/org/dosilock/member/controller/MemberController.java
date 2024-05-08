@@ -7,7 +7,6 @@ import org.dosilock.member.request.RequestMemberEmailDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.member.service.v1.MemberService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,13 +21,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
-@CrossOrigin
 public class MemberController {
 
 	private final MemberService memberService;
 	private final JwtTokenProvider jwtTokenProvider;
 
-	@Operation(summary = "로그인 API", description = "이메일 로그인")
+	@Operation(summary = "이메일 로그인 API", description = "이메일 로그인")
 	@PostMapping(value = "signin")
 	public ResponseEntity<Void> signin(HttpServletResponse httpServletResponse,
 		@RequestBody RequestMemberDto requestMemberDto) {
@@ -37,16 +35,16 @@ public class MemberController {
 		return ResponseEntity.ok().build();
 	}
 
-	@Operation(summary = "회원가입 API", description = "이메일 회원가입")
+	@Operation(summary = "회원가입 이메일 요청 API", description = "회원가입 할 이메일에 인증 메일 전달")
 	@PostMapping(value = "signup")
-	public ResponseEntity<Void> signup(@Valid @RequestBody RequestMemberEmailDto requestMemberEmailDto) {
+	public ResponseEntity<Void> signup(@RequestBody @Valid RequestMemberEmailDto requestMemberEmailDto) {
 		memberService.signup(requestMemberEmailDto);
 		return ResponseEntity.ok().build();
 	}
 
-	@Operation(summary = "회원가입 승인 이메일 전달 API", description = "이메일 회원가입 승인 이메일 전달")
+	@Operation(summary = "회원가입 이메일 승인 후 저장 API", description = "이메일 회원가입 승인 후 저장")
 	@PostMapping(value = "signup/confirm")
-	public ResponseEntity<Void> confirmEmailVerification(@Valid @RequestBody RequestMemberDto requestMemberDto) {
+	public ResponseEntity<Void> confirmEmailVerification(@RequestBody @Valid RequestMemberDto requestMemberDto) {
 		memberService.confirmEmailVerification(requestMemberDto);
 		return ResponseEntity.ok().build();
 	}
