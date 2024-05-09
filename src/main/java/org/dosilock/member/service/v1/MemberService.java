@@ -8,6 +8,7 @@ import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
+import org.dosilock.member.request.RequestMemberSigninDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.utils.EmailUtils;
 import org.dosilock.utils.GetMember;
@@ -44,10 +45,10 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional(readOnly = true)
-	public JwtToken signin(RequestMemberDto requestMemberDto) {
+	public JwtToken signin(RequestMemberSigninDto requestMemberSigninDto) {
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-			requestMemberDto.getEmail(),
-			requestMemberDto.getPassword());
+			requestMemberSigninDto.getEmail(),
+			requestMemberSigninDto.getPassword());
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		return jwtTokenProvider.generateToken(authentication);
 	}
