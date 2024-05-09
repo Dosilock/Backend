@@ -6,8 +6,10 @@ import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
 import org.dosilock.member.request.RequestMemberSigninDto;
 import org.dosilock.member.response.ResponseMemberDto;
+import org.dosilock.member.response.ResponseMemberEmailDto;
 import org.dosilock.member.service.v1.MemberService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +53,15 @@ public class MemberController {
 	public ResponseEntity<Void> signup(@RequestBody @Valid RequestMemberEmailDto requestMemberEmailDto) {
 		memberService.signup(requestMemberEmailDto);
 		return ResponseEntity.ok().build();
+	}
+
+	@Operation(summary = "회원가입 이메일 요청 API", description = "회원가입 할 이메일에 인증 메일 전달")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "성공")
+	})
+	@PostMapping(value = "signup/link/{link}")
+	public ResponseEntity<ResponseMemberEmailDto> signup(@PathVariable String link) {
+		return ResponseEntity.ok(memberService.linkVerify(link));
 	}
 
 	@Operation(summary = "회원가입 이메일 승인 후 저장 API", description = "이메일 회원가입 승인 후 저장")

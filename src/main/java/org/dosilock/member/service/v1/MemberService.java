@@ -10,6 +10,7 @@ import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
 import org.dosilock.member.request.RequestMemberSigninDto;
 import org.dosilock.member.response.ResponseMemberDto;
+import org.dosilock.member.response.ResponseMemberEmailDto;
 import org.dosilock.utils.EmailUtils;
 import org.dosilock.utils.GetMember;
 import org.dosilock.utils.InviteLink;
@@ -75,6 +76,12 @@ public class MemberService implements UserDetailsService {
 			.link(randomLinkCode)
 			.build();
 		memberRedisRepository.save(memberRedis);
+	}
+
+	@Transactional(readOnly = true)
+	public ResponseMemberEmailDto linkVerify(String link) {
+		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
+		return new ResponseMemberEmailDto(memberRedis);
 	}
 
 	@Transactional
