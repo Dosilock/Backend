@@ -4,6 +4,7 @@ import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
+import org.dosilock.member.request.RequestMemberSigninDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.member.service.v1.MemberService;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,8 @@ public class MemberController {
 	@Operation(summary = "이메일 로그인 API", description = "이메일 로그인")
 	@PostMapping(value = "signin")
 	public ResponseEntity<Void> signin(HttpServletResponse httpServletResponse,
-		@RequestBody RequestMemberDto requestMemberDto) {
-		JwtToken jwtToken = memberService.signin(requestMemberDto);
+		@RequestBody RequestMemberSigninDto requestMemberSigninDto) {
+		JwtToken jwtToken = memberService.signin(requestMemberSigninDto);
 		jwtTokenProvider.createCookieAccessToken(jwtToken.getAccessToken(), httpServletResponse);
 		return ResponseEntity.ok().build();
 	}
