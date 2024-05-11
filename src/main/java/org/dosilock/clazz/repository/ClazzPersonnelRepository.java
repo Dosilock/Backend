@@ -1,10 +1,10 @@
 package org.dosilock.clazz.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.dosilock.clazz.entity.ClazzPersonnel;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import io.lettuce.core.dynamic.annotation.Param;
 
@@ -12,7 +12,7 @@ public interface ClazzPersonnelRepository extends JpaRepository<ClazzPersonnel, 
 
 	int countByClazzId(@Param("clazzId") Long clazzId);
 
-	ClazzPersonnel findByClazzIdAndMemberId(Long clazzId, Long memberId);
+	Optional<ClazzPersonnel> findByClazzIdAndMemberId(Long clazzId, Long memberId);
 
 	List<ClazzPersonnel> findByClazzId(Long clazzId);
 

@@ -34,9 +34,8 @@ public class TimetableService {
 			.orElseThrow(() -> new NullPointerException("없는 시간표 입니다."));
 
 		TimetableResponse timetableResponse = new TimetableResponse(timetable);
-
-		timetableResponse.setPeriodRequests(
-			periodRepository.findByTimetableId(timetableId).stream().map(PeriodResponse::new).toList());
+		timetableResponse.setPeriodResponses(
+			periodRepository.findAllByTimetableId(timetableId).stream().map(PeriodResponse::new).toList());
 
 		timetableResponse.setTimetableDays(
 			Arrays.stream(timetable.getTimetableDays().split(",")).map(Integer::parseInt).toList());
@@ -46,11 +45,13 @@ public class TimetableService {
 
 	@Transactional
 	public void deleteTimetable(Long timetableId) {
+		periodRepository.deleteByTimetableId(timetableId);
 		timetableRepository.deleteById(timetableId);
 	}
 
 	@Transactional
 	public void updateTimetable(TimetableRequest timetableRequest, Long timetableId) {
+
 		List<Integer> dayValues = timetableRequest.getTimetableDays();
 		String days = dayValues.stream()
 			.map(String::valueOf)
@@ -62,6 +63,8 @@ public class TimetableService {
 			.timetableDays(days)
 			.createdAt(LocalDateTime.now())
 			.build();
+		periodRepository.deleteByTimetableId(timetableId);
+		timetableRepository.deleteById(timetableId);
 
 		Timetable getTimetable = timetableRepository.save(timetable);
 

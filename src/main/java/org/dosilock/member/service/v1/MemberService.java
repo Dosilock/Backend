@@ -1,6 +1,5 @@
 package org.dosilock.member.service.v1;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.entity.Member;
@@ -9,9 +8,11 @@ import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
+import org.dosilock.member.request.RequestMemberSigninDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.utils.EmailUtils;
 import org.dosilock.utils.GetMember;
+import org.dosilock.utils.InviteLink;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -37,15 +38,17 @@ public class MemberService implements UserDetailsService {
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final PasswordEncoder passwordEncoder;
 
+	private final InviteLink inviteLink;
+
 	private Member member() {
 		return GetMember.getMember();
 	}
 
 	@Transactional(readOnly = true)
-	public JwtToken signin(RequestMemberDto requestMemberDto) {
+	public JwtToken signin(RequestMemberSigninDto requestMemberSigninDto) {
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-			requestMemberDto.getEmail(),
-			requestMemberDto.getPassword());
+			requestMemberSigninDto.getEmail(),
+			requestMemberSigninDto.getPassword());
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 		return jwtTokenProvider.generateToken(authentication);
 	}
@@ -63,7 +66,8 @@ public class MemberService implements UserDetailsService {
 
 	@Transactional
 	public void signup(RequestMemberEmailDto requestMemberEmailDto) {
-		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
+		String randomLinkCode = inviteLink.createInveteLink();
+
 		emailUtils.sendSignupMessage(requestMemberEmailDto.getEmail(), randomLinkCode);
 
 		MemberRedis memberRedis = MemberRedis.builder()
@@ -88,12 +92,12 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional
-	public void changePassword() {
-		String randomLinkCode = RandomStringUtils.randomAlphabetic(10);
-		emailUtils.sendChangePasswordMessage(member().getEmail(), randomLinkCode);
+	public void changePassword(RequestMemberEmailDto requestMemberEmailDto) {
+		String randomLinkCode = inviteLink.createInveteLink();
+		emailUtils.sendChangePasswordMessage(requestMemberEmailDto.getEmail(), randomLinkCode);
 
 		MemberRedis memberRedis = MemberRedis.builder()
-			.email(member().getEmail())
+			.email(requestMemberEmailDto.getEmail())
 			.link(randomLinkCode)
 			.build();
 		memberRedisRepository.save(memberRedis);
