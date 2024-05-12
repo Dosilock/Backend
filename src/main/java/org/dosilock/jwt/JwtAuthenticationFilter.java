@@ -3,6 +3,7 @@ package org.dosilock.jwt;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Arrays;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,16 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		IOException,
 		ServletException {
 
-		/*String path = request.getRequestURI();
+		String path = request.getRequestURI();
 		if (Arrays.stream(WHITELIST).anyMatch(pattern -> antPathMatcher.match(pattern, path))) {
 			chain.doFilter(request, response);
 			return;
-		}*/
+		}
 
 		String token = resolveToken(request);
-		/*if (token == null) {
+		if (token == null) {
 			throw new RuntimeException();
-		}*/
+		}
 
 		try {
 			jwtTokenProvider.validateToken(token);

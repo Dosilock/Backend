@@ -11,9 +11,9 @@ spring:
     name: dosilock
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dosilock
-    username: root
-    password: Dongcci92!!
+    url: jdbc:mysql://49.50.164.235:3306/dosilock
+    username: dosilock
+    password: 1234
 #    동휘
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,7 +22,7 @@ spring:
 #    password: 1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
