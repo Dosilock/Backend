@@ -56,11 +56,11 @@ public class MemberController {
 		return ResponseEntity.ok().build();
 	}
 
-	@Operation(summary = "회원가입 링크 유효성 검사 API", description = "인증 메일에 대한 링크값이 존재하는지 검색")
+	@Operation(summary = "링크 유효성 검사 API", description = "인증 메일에 대한 링크값이 존재하는지 검색")
 	@ApiResponses({
 		@ApiResponse(responseCode = "200", description = "성공")
 	})
-	@GetMapping(value = "signup/link/{link}")
+	@GetMapping(value = "link/{link}")
 	public ResponseEntity<ResponseMemberEmailDto> signup(@PathVariable String link) {
 		return ResponseEntity.ok(memberService.linkVerify(link));
 	}
