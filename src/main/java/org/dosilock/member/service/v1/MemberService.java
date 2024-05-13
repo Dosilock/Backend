@@ -81,6 +81,9 @@ public class MemberService implements UserDetailsService {
 	@Transactional(readOnly = true)
 	public ResponseMemberEmailDto linkVerify(String link) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
+		if (memberRedis == null)
+			throw new NullPointerException("없는 링크입니다.");
+		
 		return new ResponseMemberEmailDto(memberRedis);
 	}
 
