@@ -61,7 +61,7 @@ public class MemberController {
 		@ApiResponse(responseCode = "200", description = "성공")
 	})
 	@GetMapping(value = "link/{link}")
-	public ResponseEntity<ResponseMemberEmailDto> signup(@PathVariable String link) {
+	public ResponseEntity<ResponseMemberEmailDto> signup(@PathVariable(value = "link") String link) {
 		return ResponseEntity.ok(memberService.linkVerify(link));
 	}
 
