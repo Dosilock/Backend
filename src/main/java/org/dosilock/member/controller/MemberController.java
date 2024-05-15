@@ -1,5 +1,6 @@
 package org.dosilock.member.controller;
 
+import org.dosilock.exception.StandardResponse;
 import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.request.RequestMemberDto;
@@ -39,11 +40,16 @@ public class MemberController {
 		@ApiResponse(responseCode = "200", description = "성공")
 	})
 	@PostMapping(value = "signin")
-	public ResponseEntity<Void> signin(HttpServletResponse httpServletResponse,
+	public ResponseEntity<StandardResponse<String>> signin(HttpServletResponse httpServletResponse,
 		@RequestBody RequestMemberSigninDto requestMemberSigninDto) {
 		JwtToken jwtToken = memberService.signin(requestMemberSigninDto);
 		jwtTokenProvider.createCookieAccessToken(jwtToken.getAccessToken(), httpServletResponse);
-		return ResponseEntity.ok().build();
+
+		return ResponseEntity.ok(StandardResponse
+			.<String>builder()
+			.status(200)
+			.payload("성공")
+			.build());
 	}
 
 	@Operation(summary = "회원가입 이메일 요청 API", description = "회원가입 할 이메일에 인증 메일 전달")
