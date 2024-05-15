@@ -21,14 +21,14 @@ public class ChatEventHandler {
 	public void init() {
 		server.addConnectListener(onConnected());
 		server.addDisconnectListener(onDisconnected());
-		server.addEventListener("send_message", Message.class, onChatReceived());
+		server.addEventListener("message", Message.class, onChatReceived());
+		server.addNamespace("/test").addEventListener("message", Message.class, onChatReceived());
+
 	}
 
 	private ConnectListener onConnected() {
 		return client -> {
 			System.out.println("Client connected: " + client.getSessionId());
-			String room = client.getHandshakeData().getSingleUrlParam("room");
-			client.joinRoom(room);
 		};
 	}
 
@@ -41,7 +41,7 @@ public class ChatEventHandler {
 	private DataListener<Message> onChatReceived() {
 		return (client, data, ackSender) -> {
 			System.out.println("Received chat: " + data.getMessage());
-			socketService.sendMessage(data.getRoom(), "get_message", client, data.getMessage());
+			socketService.sendMessage(client.getNamespace().getName(), "message", client, data.getMessage());
 		};
 	}
 }
