@@ -9,9 +9,9 @@ import lombok.Data;
 @Schema(description = "이메일 로그인 DTO")
 public class RequestMemberSigninDto {
 
-	@Schema(description = "이메일", required = true)
+	@Schema(description = "이메일", required = true, example = "example@gmail.com")
 	private String email;
 
-	@Schema(description = "비밀번호", required = true)
+	@Schema(description = "비밀번호", required = true, example = "password")
 	private String password;
 }
