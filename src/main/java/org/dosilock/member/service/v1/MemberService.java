@@ -1,5 +1,8 @@
 package org.dosilock.member.service.v1;
 
+import org.dosilock.exception.ErrorMessage;
+import org.dosilock.exception.ErrorResponseDto;
+import org.dosilock.exception.UserErrorException;
 import org.dosilock.jwt.JwtToken;
 import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.entity.Member;
@@ -20,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +64,7 @@ public class MemberService implements UserDetailsService {
 				.username(user.getEmail())
 				.password(user.getPassword())
 				.build())
-			.orElseThrow(() -> new UsernameNotFoundException("회원을 찾을 수 없습니다."));
+			.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.USER_NOT_FOUND)));
 	}
 
 	@Transactional
@@ -82,8 +84,8 @@ public class MemberService implements UserDetailsService {
 	public ResponseMemberEmailDto linkVerify(String link) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(link);
 		if (memberRedis == null)
-			throw new NullPointerException("없는 링크입니다.");
-		
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.LINK_NOT_FOUND));
+
 		return new ResponseMemberEmailDto(memberRedis);
 	}
 
@@ -117,7 +119,7 @@ public class MemberService implements UserDetailsService {
 	public void confirmChangePassword(RequestMemberDto requestMemberDto) {
 		MemberRedis memberRedis = memberRedisRepository.findByLink(requestMemberDto.getLink());
 		Member member = memberRepository.findByEmail(memberRedis.getEmail())
-			.orElseThrow(() -> new UsernameNotFoundException("회원을 못찾음."));
+			.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.USER_NOT_FOUND)));
 
 		member.updatePassword(requestMemberDto.getPassword(), passwordEncoder::encode);
 	}

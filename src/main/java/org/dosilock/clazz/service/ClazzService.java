@@ -16,8 +16,10 @@ import org.dosilock.clazz.response.ClazzInfoResponse;
 import org.dosilock.clazz.response.ClazzLinkResponse;
 import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzMemberInfoResponse;
+import org.dosilock.exception.ErrorMessage;
+import org.dosilock.exception.ErrorResponseDto;
+import org.dosilock.exception.UserErrorException;
 import org.dosilock.member.entity.Member;
-import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.timetable.entity.Period;
 import org.dosilock.timetable.entity.Timetable;
 import org.dosilock.timetable.repository.PeriodRepository;
@@ -39,15 +41,13 @@ public class ClazzService {
 	private final ClazzPersonnelRepository personnelRepository;
 	private final InviteLink inviteLink;
 	private final ClazzPersonnelRepository clazzPersonnelRepository;
-	private final MemberRepository memberRepository;
-	private final GetMember getMember;
 
 	private Member member() {
 		return GetMember.getMember();
 	}
 
 	@Transactional
-	public ClazzLinkResponse addClazz(ClazzRequest clazzRequest) throws Exception {
+	public ClazzLinkResponse addClazz(ClazzRequest clazzRequest) {
 		Clazz clazz = Clazz.builder()
 			.clazzTitle(clazzRequest.getClazzName())
 			.clazzDescription(clazzRequest.getClazzDescription())
@@ -99,7 +99,7 @@ public class ClazzService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ClazzListResponse> getClazzList() throws Exception {
+	public List<ClazzListResponse> getClazzList() {
 		Long memberId = member().getId();
 		List<Clazz> clazzes = clazzRepository.findByMemberId(memberId);
 		List<ClazzListResponse> clazzListResponses = new ArrayList<>();
@@ -123,7 +123,6 @@ public class ClazzService {
 	//반 이름, 반 아이콘, 반 인원 수
 	@Transactional(readOnly = true)
 	public ClazzInfoResponse getClazzInfo(String link) {
-		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		Long clazzId = clazz.getId();
 		ClazzInfoResponse clazzInfoResponse = new ClazzInfoResponse();
@@ -136,10 +135,9 @@ public class ClazzService {
 
 	//가입 수락,거절 방장이어야하고
 	@Transactional
-	public void checkAccept(String link, Boolean isAccepted) throws Exception {
+	public void checkAccept(String link, Boolean isAccepted) {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
-		Long clazzId = clazz.getId();
 		if (Objects.equals(memberId, clazz.getMember().getId())) {
 			ClazzPersonnel clazzPersonnel = new ClazzPersonnel();
 			if (isAccepted) {
@@ -150,14 +148,14 @@ public class ClazzService {
 				clazzPersonnelRepository.save(clazzPersonnel);
 			}
 		} else {
-			throw new IllegalStateException("방장이 아님.");
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.NOT_ROOM_OWNER));
 		}
 	}
 
 	//가입된 멤버인가 체크 후 가입 신청 처리
 	//방장인가? 블랙리스트인가? 가입 진행중인가? 이미 멤버인가?
 	@Transactional
-	public void checkMemberAndInvete(String link) throws Exception {
+	public void checkMemberAndInvete(String link) {
 		Long memberId = member().getId();
 		Clazz clazz = clazzRepository.findByClazzLink(link);
 		Long clazzId = clazz.getId();
@@ -172,13 +170,13 @@ public class ClazzService {
 			});
 
 		if (Objects.equals(clazz.getMember().getId(), memberId)) {
-			throw new IllegalStateException("방장입니다.");
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.ROOM_OWNER));
 		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 1)) {
-			throw new IllegalStateException("이미 멤버입니다.");
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.ALREADY_A_MEMBER));
 		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 2)) {
-			throw new IllegalStateException("가입 진행중입니다.");
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.REGISTRATION_IN_PROGRESS));
 		} else if (Objects.equals(clazzPersonnel.getRoleStatus(), 3)) {
-			throw new IllegalStateException("거절된 상태입니다.");
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.REJECTED));
 		}
 	}
 
