@@ -30,8 +30,11 @@ public class SecurityConfig {
 			.sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorize ->
 				authorize
+					.requestMatchers("/index/**", "/api/**").permitAll()
+					.requestMatchers("https://ssda-front-tan.vercel.app/", "https://dassda.today", "https://www.dassda.today").permitAll()
 					.anyRequest()
-					.permitAll())
+					.permitAll()
+					)
 			.oauth2Login(Customizer.withDefaults());
 		// .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 		return httpSecurity.build();
