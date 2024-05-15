@@ -1,11 +1,15 @@
 package org.dosilock.exception;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public class ErrorResponseDto {
-	private int errorCode;
+
+	private String errorCode;
 	private String errorMessage;
+
+	public ErrorResponseDto(ErrorMessage errorMessage) {
+		this.errorCode = errorMessage.getCode();
+		this.errorMessage = errorMessage.getMessage();
+	}
 }

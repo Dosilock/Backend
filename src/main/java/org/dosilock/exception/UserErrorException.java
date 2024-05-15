@@ -2,7 +2,8 @@ package org.dosilock.exception;
 
 import lombok.Getter;
 
-public class UserErrorException extends Exception {
+public class UserErrorException extends RuntimeException {
+
 	@Getter
 	private ErrorResponseDto errorResponseDto;
 
