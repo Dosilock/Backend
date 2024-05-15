@@ -9,9 +9,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalException {
 
+	@ExceptionHandler(UserErrorException.class)
+	public ResponseEntity<StandardResponseDto<ErrorResponseDto>> handle(UserErrorException e) {
+		return new ResponseEntity<>(StandardResponseDto
+			.<ErrorResponseDto>builder()
+			.status(500)
+			.payload(e.getErrorResponseDto())
+			.build(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
 	@ExceptionHandler(IllegalStateException.class)
-	public ResponseEntity<StandardResponse> handle(IllegalStateException e) {
-		return new ResponseEntity<>(StandardResponse
+	public ResponseEntity<StandardResponseDto> handle(IllegalStateException e) {
+		return new ResponseEntity<>(StandardResponseDto
 			.<String>builder()
 			.status(500)
 			.payload(e.getMessage())
@@ -20,7 +29,7 @@ public class GlobalException {
 
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity<Object> handle(UsernameNotFoundException e) {
-		return new ResponseEntity<>(StandardResponse
+		return new ResponseEntity<>(StandardResponseDto
 			.<String>builder()
 			.status(401)
 			.payload(e.getMessage())
@@ -29,7 +38,7 @@ public class GlobalException {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Object> handle(IllegalArgumentException e) {
-		return new ResponseEntity<>(StandardResponse
+		return new ResponseEntity<>(StandardResponseDto
 			.<String>builder()
 			.status(500)
 			.payload(e.getMessage())

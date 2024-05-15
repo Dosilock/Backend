@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class StandardResponse<T> {
+public class StandardResponseDto<T> {
 	@Schema(description = "응답 코드", required = true, example = "000")
 	private int status;
 
