@@ -9,7 +9,7 @@ import lombok.Data;
 @Schema(description = "이메일 응답 DTO")
 public class ResponseMemberEmailDto {
 
-	@Schema(description = "이메일", required = true)
+	@Schema(description = "이메일", example = "example@gmail.com", required = true)
 	private String email;
 
 	public ResponseMemberEmailDto(MemberRedis memberRedis) {
