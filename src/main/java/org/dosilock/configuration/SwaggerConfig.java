@@ -17,27 +17,11 @@ import io.swagger.v3.oas.annotations.info.Info;
 @Configuration
 public class SwaggerConfig {
 
-	private static final String REFERENCE = "Authorization";
-
 	@Bean
 	public GroupedOpenApi api() {
 		return GroupedOpenApi.builder()
 			.group("default")
 			.packagesToScan("org.dosilock")
-			//.addOpenApiCustomizer(openAPIDefinition())
 			.build();
 	}
-
-	// private OpenApiCustomizer openAPIDefinition() {
-	// 	return openApi -> {
-	// 		openApi.addSecurityItem(new SecurityRequirement().addList(REFERENCE));
-	// 		openApi.components(new Components()
-	// 			.addSecuritySchemes(REFERENCE, new SecurityScheme()
-	// 				.name(REFERENCE)
-	// 				.type(SecurityScheme.Type.HTTP)
-	// 				.in(SecurityScheme.In.HEADER)
-	// 				.scheme("Bearer")
-	// 				.name("Bearer 붙이셈")));
-	// 	};
-	// }
 }
