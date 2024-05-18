@@ -14,9 +14,9 @@ import lombok.Setter;
 @Builder
 public class ClazzMemberInfoResponse {
 
-	@Schema(description = "닉네임")
+	@Schema(description = "닉네임", example = "nickname")
 	private String ninkname;
 
-	@Schema(description = "프로필 사진")
+	@Schema(description = "프로필 사진", example = "https://example.com/image.png")
 	private String profileImg;
 }

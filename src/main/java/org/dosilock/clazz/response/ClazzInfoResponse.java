@@ -14,10 +14,10 @@ import lombok.Setter;
 @Builder
 public class ClazzInfoResponse {
 
-	@Schema(description = "반 이름")
+	@Schema(description = "반 이름", example = "반 이름")
 	private String clazzName;
 
-	@Schema(description = "반 아이콘")
+	@Schema(description = "반 아이콘", example = "base64 image")
 	private String clazzIcon;
 
 	@Schema(description = "멤버 수")
