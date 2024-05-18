@@ -1,5 +1,8 @@
 package org.dosilock.timetable.controller;
 
+import org.dosilock.exception.StandardResponseDto;
+import org.dosilock.exception.Swagger401StandardResponseDto;
+import org.dosilock.exception.Swagger500StandardResponseDto;
 import org.dosilock.timetable.request.TimetableRequest;
 import org.dosilock.timetable.response.TimetableResponse;
 import org.dosilock.timetable.service.TimetableService;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -27,32 +32,50 @@ public class TimetableController {
 
 	@Operation(summary = "시간표 보기 API", description = "시간표의 정보와 시간표 모든 교시를 보여줍니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공")
+		@ApiResponse(responseCode = "200", description = "성공", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "401", description = "유효한 인증 거부", content = @Content(schema = @Schema(implementation = Swagger401StandardResponseDto.class))),
+		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@GetMapping(value = "info/{timetableId}")
-	public ResponseEntity<TimetableResponse> getTimetableInfo(
+	public ResponseEntity<StandardResponseDto<TimetableResponse>> getTimetableInfo(
 		@Parameter(description = "시간표 아이디") @PathVariable Long timetableId) {
-		return ResponseEntity.ok(timetableService.getTimetableInfo(timetableId));
+
+		return ResponseEntity.ok(StandardResponseDto
+			.<TimetableResponse>builder()
+			.status(200)
+			.payload(timetableService.getTimetableInfo(timetableId))
+			.build());
 	}
 
 	@Operation(summary = "시간표 편집 API", description = "시간표를 편집 합니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공")
+		@ApiResponse(responseCode = "200", description = "성공", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "401", description = "유효한 인증 거부", content = @Content(schema = @Schema(implementation = Swagger401StandardResponseDto.class))),
+		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@PutMapping(value = "modify/{timetableId}")
-	public ResponseEntity<Void> updateTimetable(@RequestBody TimetableRequest timetableRequest,
+	public ResponseEntity<StandardResponseDto<Void>> updateTimetable(@RequestBody TimetableRequest timetableRequest,
 		@Parameter(description = "시간표 아이디") @PathVariable Long timetableId) {
 		timetableService.updateTimetable(timetableRequest, timetableId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(StandardResponseDto
+			.<Void>builder()
+			.status(200)
+			.build());
 	}
 
 	@Operation(summary = "시간표 삭제 API", description = "시간표를 삭제 합니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "성공")
+		@ApiResponse(responseCode = "200", description = "성공", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "401", description = "유효한 인증 거부", content = @Content(schema = @Schema(implementation = Swagger401StandardResponseDto.class))),
+		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@DeleteMapping(value = "delete/{timetableId}")
-	public ResponseEntity<Void> deleteTimetable(@Parameter(description = "시간표 아이디") @PathVariable Long timetableId) {
+	public ResponseEntity<StandardResponseDto<Void>> deleteTimetable(
+		@Parameter(description = "시간표 아이디") @PathVariable Long timetableId) {
 		timetableService.deleteTimetable(timetableId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(StandardResponseDto
+			.<Void>builder()
+			.status(200)
+			.build());
 	}
 }
