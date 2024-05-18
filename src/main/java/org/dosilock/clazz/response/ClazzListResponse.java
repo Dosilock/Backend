@@ -9,17 +9,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClazzListResponse {
-	
-	@Schema(description = "반 이름")
+
+	@Schema(description = "반 이름", example = "반 이름")
 	private String clazzName;
 
 	@Schema(description = "방장 여부")
 	@JsonProperty("isOwned")
 	private boolean isOwned;
 
-	@Schema(description = "멤버 수")
+	@Schema(description = "멤버 수", example = "멤버 수")
 	private int memberCount;
 
-	@Schema(description = "반 아이콘")
+	@Schema(description = "반 아이콘", example = "base64 image")
 	private String clazzIcon;
 }
