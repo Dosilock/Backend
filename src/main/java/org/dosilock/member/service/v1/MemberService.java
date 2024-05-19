@@ -3,8 +3,6 @@ package org.dosilock.member.service.v1;
 import org.dosilock.exception.ErrorMessage;
 import org.dosilock.exception.ErrorResponseDto;
 import org.dosilock.exception.UserErrorException;
-import org.dosilock.jwt.JwtToken;
-import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.entity.Member;
 import org.dosilock.member.redis.MemberRedis;
 import org.dosilock.member.repository.MemberRedisRepository;
@@ -19,7 +17,6 @@ import org.dosilock.utils.GetMember;
 import org.dosilock.utils.InviteLink;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,7 +34,6 @@ public class MemberService implements UserDetailsService {
 	private final MemberRedisRepository memberRedisRepository;
 
 	private final EmailUtils emailUtils;
-	private final JwtTokenProvider jwtTokenProvider;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final PasswordEncoder passwordEncoder;
 
@@ -48,12 +44,11 @@ public class MemberService implements UserDetailsService {
 	}
 
 	@Transactional(readOnly = true)
-	public JwtToken signin(RequestMemberSigninDto requestMemberSigninDto) {
+	public void signin(RequestMemberSigninDto requestMemberSigninDto) {
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 			requestMemberSigninDto.getEmail(),
 			requestMemberSigninDto.getPassword());
-		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-		return jwtTokenProvider.generateToken(authentication);
+		authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 	}
 
 	@Override

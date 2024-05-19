@@ -3,8 +3,6 @@ package org.dosilock.member.controller;
 import org.dosilock.exception.StandardResponseDto;
 import org.dosilock.exception.Swagger401StandardResponseDto;
 import org.dosilock.exception.Swagger500StandardResponseDto;
-import org.dosilock.jwt.JwtToken;
-import org.dosilock.jwt.JwtTokenProvider;
 import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
 import org.dosilock.member.request.RequestMemberSigninDto;
@@ -35,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 
 	private final MemberService memberService;
-	private final JwtTokenProvider jwtTokenProvider;
 
 	@Operation(summary = "이메일 로그인 API", description = "이메일 로그인")
 	@ApiResponses({
@@ -47,8 +44,7 @@ public class MemberController {
 	public ResponseEntity<StandardResponseDto<Void>> signin(HttpServletResponse httpServletResponse,
 		@RequestBody RequestMemberSigninDto requestMemberSigninDto) {
 
-		JwtToken jwtToken = memberService.signin(requestMemberSigninDto);
-		jwtTokenProvider.createCookieAccessToken(jwtToken.getAccessToken(), httpServletResponse);
+		memberService.signin(requestMemberSigninDto);
 
 		return ResponseEntity.ok(StandardResponseDto
 			.<Void>builder()
