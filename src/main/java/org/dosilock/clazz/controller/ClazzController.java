@@ -8,7 +8,6 @@ import org.dosilock.clazz.response.ClazzLinkResponse;
 import org.dosilock.clazz.response.ClazzListResponse;
 import org.dosilock.clazz.response.ClazzMemberInfoResponse;
 import org.dosilock.clazz.service.ClazzService;
-import org.dosilock.exception.StandardResponseDto;
 import org.dosilock.exception.Swagger401StandardResponseDto;
 import org.dosilock.exception.Swagger500StandardResponseDto;
 import org.springframework.http.ResponseEntity;
@@ -44,14 +43,10 @@ public class ClazzController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@PostMapping()
-	public ResponseEntity<StandardResponseDto<ClazzLinkResponse>> addClazz(
-		@Valid @RequestBody ClazzRequest clazzRequest) throws Exception {
+	public ResponseEntity<ClazzLinkResponse> addClazz(
+		@Valid @RequestBody ClazzRequest clazzRequest) {
 		ClazzLinkResponse clazzLinkResponse = clazzService.addClazz(clazzRequest);
-		return ResponseEntity.ok(StandardResponseDto
-			.<ClazzLinkResponse>builder()
-			.status(200)
-			.payload(clazzLinkResponse)
-			.build());
+		return ResponseEntity.ok(clazzLinkResponse);
 	}
 
 	@Operation(summary = "반 목록 API", description = "반목록, 참여중인 인원 수, 나중에 실시간으로 현재 접속자 수")
@@ -61,13 +56,9 @@ public class ClazzController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@GetMapping(value = "list")
-	public ResponseEntity<StandardResponseDto<List<ClazzListResponse>>> getClazzList() throws Exception {
+	public ResponseEntity<List<ClazzListResponse>> getClazzList() {
 		List<ClazzListResponse> clazzListResponses = clazzService.getClazzList();
-		return ResponseEntity.ok(StandardResponseDto
-			.<List<ClazzListResponse>>builder()
-			.status(200)
-			.payload(clazzListResponses)
-			.build());
+		return ResponseEntity.ok(clazzListResponses);
 	}
 
 	@Operation(summary = "반 정보 API", description = "반에 대한 정보를 반환")
@@ -77,14 +68,10 @@ public class ClazzController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@GetMapping(value = "info/link/{clazzId}")
-	public ResponseEntity<StandardResponseDto<ClazzInfoResponse>> getClazzInfo(
+	public ResponseEntity<ClazzInfoResponse> getClazzInfo(
 		@PathVariable(value = "clazzId") String link) {
 		ClazzInfoResponse clazzInfoResponse = clazzService.getClazzInfo(link);
-		return ResponseEntity.ok(StandardResponseDto
-			.<ClazzInfoResponse>builder()
-			.status(200)
-			.payload(clazzInfoResponse)
-			.build());
+		return ResponseEntity.ok(clazzInfoResponse);
 	}
 
 	@Operation(summary = "(멤버) 반 가입 신청 API", description = "0 - 방장, 1 - 멤버, 2 - 가입 승인 중 반 가입 조건을 확인후 안되면 에러 리턴")
@@ -94,12 +81,9 @@ public class ClazzController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@PostMapping(value = "check/link/{clazzId}")
-	public ResponseEntity<StandardResponseDto<Void>> checkMember(@PathVariable(value = "clazzId") String link) {
+	public ResponseEntity<Void> checkMember(@PathVariable(value = "clazzId") String link) {
 		clazzService.checkMemberAndInvete(link);
-		return ResponseEntity.ok(StandardResponseDto
-			.<Void>builder()
-			.status(200)
-			.build());
+		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "(반장)반 가입 수락/거절 API", description = "방장이 가입 신청을 한 멤버를 수락/거절")
@@ -109,13 +93,10 @@ public class ClazzController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@PostMapping(value = "join/link/{clazzId}")
-	public ResponseEntity<StandardResponseDto<Void>> getInvite(@PathVariable(value = "clazzId") String link,
+	public ResponseEntity<Void> getInvite(@PathVariable(value = "clazzId") String link,
 		@RequestParam(value = "isAccepted") Boolean isAccepted) {
 		clazzService.checkAccept(link, isAccepted);
-		return ResponseEntity.ok(StandardResponseDto
-			.<Void>builder()
-			.status(200)
-			.build());
+		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "반 멤버 가져오기 API", description = "")
@@ -125,13 +106,9 @@ public class ClazzController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@GetMapping(value = "member/link/{clazzId}")
-	public ResponseEntity<StandardResponseDto<List<ClazzMemberInfoResponse>>> getMemberInfo(
+	public ResponseEntity<List<ClazzMemberInfoResponse>> getMemberInfo(
 		@PathVariable(value = "clazzId") String link) {
 		List<ClazzMemberInfoResponse> memberInfoResponseList = clazzService.getMemberInfo(link);
-		return ResponseEntity.ok(StandardResponseDto
-			.<List<ClazzMemberInfoResponse>>builder()
-			.status(200)
-			.payload(memberInfoResponseList)
-			.build());
+		return ResponseEntity.ok(memberInfoResponseList);
 	}
 }

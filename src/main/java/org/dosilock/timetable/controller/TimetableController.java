@@ -1,6 +1,5 @@
 package org.dosilock.timetable.controller;
 
-import org.dosilock.exception.StandardResponseDto;
 import org.dosilock.exception.Swagger401StandardResponseDto;
 import org.dosilock.exception.Swagger500StandardResponseDto;
 import org.dosilock.timetable.request.TimetableRequest;
@@ -37,14 +36,9 @@ public class TimetableController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@GetMapping(value = "info/{timetableId}")
-	public ResponseEntity<StandardResponseDto<TimetableResponse>> getTimetableInfo(
+	public ResponseEntity<TimetableResponse> getTimetableInfo(
 		@Parameter(description = "시간표 아이디") @PathVariable Long timetableId) {
-
-		return ResponseEntity.ok(StandardResponseDto
-			.<TimetableResponse>builder()
-			.status(200)
-			.payload(timetableService.getTimetableInfo(timetableId))
-			.build());
+		return ResponseEntity.ok(timetableService.getTimetableInfo(timetableId));
 	}
 
 	@Operation(summary = "시간표 편집 API", description = "시간표를 편집 합니다.")
@@ -54,13 +48,10 @@ public class TimetableController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@PutMapping(value = "modify/{timetableId}")
-	public ResponseEntity<StandardResponseDto<Void>> updateTimetable(@RequestBody TimetableRequest timetableRequest,
+	public ResponseEntity<Void> updateTimetable(@RequestBody TimetableRequest timetableRequest,
 		@Parameter(description = "시간표 아이디") @PathVariable Long timetableId) {
 		timetableService.updateTimetable(timetableRequest, timetableId);
-		return ResponseEntity.ok(StandardResponseDto
-			.<Void>builder()
-			.status(200)
-			.build());
+		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "시간표 삭제 API", description = "시간표를 삭제 합니다.")
@@ -70,12 +61,9 @@ public class TimetableController {
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
 	@DeleteMapping(value = "delete/{timetableId}")
-	public ResponseEntity<StandardResponseDto<Void>> deleteTimetable(
+	public ResponseEntity<Void> deleteTimetable(
 		@Parameter(description = "시간표 아이디") @PathVariable Long timetableId) {
 		timetableService.deleteTimetable(timetableId);
-		return ResponseEntity.ok(StandardResponseDto
-			.<Void>builder()
-			.status(200)
-			.build());
+		return ResponseEntity.ok().build();
 	}
 }

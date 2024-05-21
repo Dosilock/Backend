@@ -62,8 +62,7 @@ public class SecurityConfig {
 		customAuthenticationFilter.setAuthenticationManager(authenticationManager());
 		customAuthenticationFilter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
 		customAuthenticationFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
-
-		// **
+		
 		customAuthenticationFilter.setSecurityContextRepository(
 			new DelegatingSecurityContextRepository(
 				new RequestAttributeSecurityContextRepository(),
