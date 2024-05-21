@@ -15,7 +15,7 @@ public class SocketController {
 
 	private final SocketService socketService;
 
-	@PostMapping("add/{name}")
+	@PostMapping("/{name}")
 	public ResponseEntity<Void> createNamespace(@PathVariable("name") String name) {
 		socketService.addNamespace(name);
 		return ResponseEntity.ok().build();

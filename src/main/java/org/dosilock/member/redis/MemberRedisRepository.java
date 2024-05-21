@@ -1,6 +1,5 @@
-package org.dosilock.member.repository;
+package org.dosilock.member.redis;
 
-import org.dosilock.member.redis.MemberRedis;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

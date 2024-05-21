@@ -1,5 +1,7 @@
 package org.dosilock.socket;
 
+import org.dosilock.socket.redis.NamespaceRedis;
+import org.dosilock.socket.redis.NamespaceRedisRepository;
 import org.springframework.stereotype.Service;
 
 import com.corundumstudio.socketio.SocketIOClient;
@@ -17,17 +19,27 @@ import lombok.RequiredArgsConstructor;
 public class SocketService {
 
 	private final SocketIOServer server;
+	private final NamespaceRedisRepository namespaceRedisRepository;
 
 	@PostConstruct
 	public void init() {
 		server.addConnectListener(onConnected());
 		server.addDisconnectListener(onDisconnected());
+
+		namespaceRedisRepository.findAll().forEach(e -> {
+			System.out.println(e.getName());
+			createNamespace(e.getName());
+		});
 	}
 
 	public void addNamespace(String name) {
-		SocketIONamespace namespace = server.addNamespace("/" + name);
-		namespace.addEventListener(MessageType.FOCUS_MESSAGE.name(), Message.class, onFocusMessage());
-		namespace.addEventListener(MessageType.MEMBERS_INFO.name(), Message.class, onMemberInfo());
+		if (server.getAllNamespaces().stream().filter(e -> e.getName().equals("/" + name)).count() > 0) {
+			System.out.println("이미 존재 합니다.");
+			return;
+		}
+
+		createNamespace(name);
+		namespaceRedisRepository.save(NamespaceRedis.builder().name(name).build());
 	}
 
 	private DataListener<Message> onMemberInfo() {
@@ -62,6 +74,12 @@ public class SocketService {
 		return client -> {
 			System.out.println("Client disconnected: " + client.getSessionId());
 		};
+	}
+
+	private void createNamespace(String name) {
+		SocketIONamespace namespace = server.addNamespace("/" + name);
+		namespace.addEventListener(MessageType.FOCUS_MESSAGE.name(), Message.class, onFocusMessage());
+		namespace.addEventListener(MessageType.MEMBERS_INFO.name(), Message.class, onMemberInfo());
 	}
 
 	private void sendAllMessage(MessageType type, SocketIOClient senderClient, String message) {
