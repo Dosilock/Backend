@@ -1,5 +1,6 @@
 package org.dosilock.socket;
 
 public enum MessageType {
-	SERVER, CLIENT
+	FOCUS_MESSAGE,
+	MEMBERS_INFO
 }
