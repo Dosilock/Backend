@@ -8,7 +8,8 @@ public enum ErrorMessage {
 	ALREADY_A_MEMBER("ALREADY_A_MEMBER", "이미 멤버입니다."),
 	REGISTRATION_IN_PROGRESS("REGISTRATION_IN_PROGRESS", "가입 진행중입니다."),
 	REJECTED("REJECTED", "거절된 상태입니다."),
-	TIME_TABLE_NOT_FOUND("TIME_TABLE_NOT_FOUND", "시간표를 찾을 수가 없습니다.");
+	TIME_TABLE_NOT_FOUND("TIME_TABLE_NOT_FOUND", "시간표를 찾을 수가 없습니다."),
+	ALREADY_NAMESPACE("ALREADY_NAMESPACE", "이미 방이 생성되어 있습니다.");
 
 	private final String code;
 	private final String message;
