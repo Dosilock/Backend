@@ -15,11 +15,11 @@ import lombok.Setter;
 @Builder
 public class TimetableRequest {
 
-	@Schema(description = "시간표 이름")
+	@Schema(description = "시간표 이름", example = "시간표 이름")
 	@Size(min = 2, max = 50, message = "50자를 넘길 수 없음..")
 	private String timetableName;
 
-	@Schema(description = "시간표 일수")
+	@Schema(description = "시간표 일수", example = "시간표 일수")
 	private List<Integer> timetableDays;
 
 	@Schema(description = "교시")

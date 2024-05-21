@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.dosilock.exception.ErrorMessage;
+import org.dosilock.exception.ErrorResponseDto;
+import org.dosilock.exception.UserErrorException;
 import org.dosilock.timetable.entity.Period;
 import org.dosilock.timetable.entity.Timetable;
 import org.dosilock.timetable.repository.PeriodRepository;
@@ -31,7 +34,7 @@ public class TimetableService {
 		// 자신이 해당 시간표를 생성한 반 인원에 속해 있어야지 보여 줄 수 있어야함.
 
 		Timetable timetable = timetableRepository.findById(timetableId)
-			.orElseThrow(() -> new NullPointerException("없는 시간표 입니다."));
+			.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.TIME_TABLE_NOT_FOUND)));
 
 		TimetableResponse timetableResponse = new TimetableResponse(timetable);
 		timetableResponse.setPeriodResponses(
@@ -45,6 +48,9 @@ public class TimetableService {
 
 	@Transactional
 	public void deleteTimetable(Long timetableId) {
+		timetableRepository.findById(timetableId)
+			.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.TIME_TABLE_NOT_FOUND)));
+		
 		periodRepository.deleteByTimetableId(timetableId);
 		timetableRepository.deleteById(timetableId);
 	}
@@ -58,11 +64,14 @@ public class TimetableService {
 			.collect(Collectors.joining(","));
 
 		Timetable timetable = Timetable.builder()
-			.clazz(timetableRepository.findById(timetableId).orElseThrow().getClazz())
+			.clazz(timetableRepository.findById(timetableId)
+				.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.TIME_TABLE_NOT_FOUND)))
+				.getClazz())
 			.timetableName(timetableRequest.getTimetableName())
 			.timetableDays(days)
 			.createdAt(LocalDateTime.now())
 			.build();
+
 		periodRepository.deleteByTimetableId(timetableId);
 		timetableRepository.deleteById(timetableId);
 

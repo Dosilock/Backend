@@ -13,17 +13,17 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ResponseMemberDto {
-	
-	@Schema(description = "이메일")
+
+	@Schema(description = "이메일", example = "example@gmail.com")
 	private String email;
 
-	@Schema(description = "닉네임")
+	@Schema(description = "닉네임", example = "nickname")
 	private String nickname;
 
-	@Schema(description = "프로필 사진")
+	@Schema(description = "프로필 사진", example = "https://example.com/image.png")
 	private String profileImg;
 
-	@Schema(description = "로그인 타입")
+	@Schema(description = "로그인 타입", example = "EMAIL")
 	private AuthEnum loginType;
 
 	public ResponseMemberDto(Member member) {

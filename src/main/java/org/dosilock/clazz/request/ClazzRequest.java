@@ -18,16 +18,16 @@ import lombok.Setter;
 public class ClazzRequest {
 
 	@Size(min = 2, max = 50, message = "50자를 넘을 수 없음..")
-	@Schema(description = "반 이름")
+	@Schema(description = "반 이름", example = "반 이름")
 	private String clazzName;
 
 	@Size(max = 1000, message = "1000자를 넘을 수 없음..")
-	@Schema(description = "반 설명")
+	@Schema(description = "반 설명", example = "반 설명")
 	private String clazzDescription;
 
-	@Schema(description = "반 아이콘")
+	@Schema(description = "반 아이콘", example = "base64 image")
 	private String clazzIcon;
-	
+
 	@Schema(description = "시간표 요청 DTO")
 	private TimetableRequest timetableRequest;
 }

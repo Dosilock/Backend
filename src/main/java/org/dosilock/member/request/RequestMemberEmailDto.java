@@ -9,7 +9,7 @@ import lombok.Data;
 @Schema(description = "이메일 DTO")
 public class RequestMemberEmailDto {
 
-	@Schema(description = "이메일", required = true)
+	@Schema(description = "이메일", example = "example@gmail.com", required = true)
 	@NotNull(message = "이메일을 작성해주세요.")
 	@Email(message = "올바른 이메일 형식이 아닙니다.")
 	private String email;

@@ -1,0 +1,59 @@
+server:
+  port: 443
+  ssl:
+    key-store: file:/root/dosilock.kro.kr/key.p12
+    key-store-type: PKCS12
+    key-store-password: 1234
+    key-alias: System
+
+spring:
+  application:
+    name: dosilock
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dosilock
+    username: root
+    password: 1234QQAA
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+    generate-ddl: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 164527990614-phh8uk342hvgrc55caca6k10kj3s9urf.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile,email
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: gongsilock@gmail.com
+    password: hmmg paby ocib gxml
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret:
+    key: dosliockapplicationdosliockapplicationdosliockapplicationdosliockapplication
+
+

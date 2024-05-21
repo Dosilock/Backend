@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClazzLinkResponse {
-	
-	@Schema(description = "반 고유링크")
+
+	@Schema(description = "반 고유링크", example = "link")
 	private String clazzLink;
 }
