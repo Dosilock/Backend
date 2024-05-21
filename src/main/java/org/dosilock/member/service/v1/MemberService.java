@@ -17,6 +17,7 @@ import org.dosilock.utils.GetMember;
 import org.dosilock.utils.InviteLink;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,12 +44,14 @@ public class MemberService implements UserDetailsService {
 		return GetMember.getMember();
 	}
 
-	@Transactional(readOnly = true)
 	public void signin(RequestMemberSigninDto requestMemberSigninDto) {
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 			requestMemberSigninDto.getEmail(),
 			requestMemberSigninDto.getPassword());
-		authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+		SecurityContextHolder.getContext()
+			.setAuthentication(authenticationManagerBuilder.getObject().authenticate(authenticationToken));
+
+		System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 	}
 
 	@Override
