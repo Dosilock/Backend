@@ -9,15 +9,12 @@ import org.dosilock.member.repository.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
-import org.dosilock.member.request.RequestMemberSigninDto;
 import org.dosilock.member.response.ResponseMemberDto;
 import org.dosilock.member.response.ResponseMemberEmailDto;
 import org.dosilock.utils.EmailUtils;
 import org.dosilock.utils.GetMember;
 import org.dosilock.utils.InviteLink;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,16 +39,6 @@ public class MemberService implements UserDetailsService {
 
 	private Member member() {
 		return GetMember.getMember();
-	}
-
-	public void signin(RequestMemberSigninDto requestMemberSigninDto) {
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-			requestMemberSigninDto.getEmail(),
-			requestMemberSigninDto.getPassword());
-		SecurityContextHolder.getContext()
-			.setAuthentication(authenticationManagerBuilder.getObject().authenticate(authenticationToken));
-
-		System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 	}
 
 	@Override

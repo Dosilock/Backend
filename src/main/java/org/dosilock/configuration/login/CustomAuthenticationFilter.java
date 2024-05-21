@@ -37,14 +37,14 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
 		AccountDto accountDto = objectMapper.readValue(request.getReader(), AccountDto.class);
 
 		// ID, PASSWORD 가 있는지 확인
-		if (!StringUtils.hasLength(accountDto.getUsername())
+		if (!StringUtils.hasLength(accountDto.getEmail())
 			|| !StringUtils.hasLength(accountDto.getPassword())) {
 			throw new IllegalArgumentException("username or password is empty");
 		}
 
 		// 처음에는 인증 되지 않은 토큰 생성
 		CustomAuthenticationToken token = new CustomAuthenticationToken(
-			accountDto.getUsername(),
+			accountDto.getEmail(),
 			accountDto.getPassword()
 		);
 
@@ -65,7 +65,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	@Data
 	public static class AccountDto {
-		private String username;
+		private String email;
 		private String password;
 	}
 

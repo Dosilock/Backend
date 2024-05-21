@@ -40,7 +40,6 @@ public class MemberController {
 	})
 	@PostMapping(value = "signin")
 	public ResponseEntity<Void> signin(@RequestBody RequestMemberSigninDto requestMemberSigninDto) {
-		memberService.signin(requestMemberSigninDto);
 		return ResponseEntity.ok().build();
 	}
 
