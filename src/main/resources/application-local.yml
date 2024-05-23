@@ -1,4 +1,8 @@
 server:
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID
   port: 8080
 
 spring:
@@ -46,3 +50,8 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+  session:
+    redis:
+      flush-mode: immediate
+
