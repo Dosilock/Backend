@@ -55,6 +55,9 @@ dependencies {
 
     // netty-socketio
     implementation 'com.corundumstudio.socketio:netty-socketio:2.0.9'
+
+    // session-redis
+    implementation 'org.springframework.session:spring-session-data-redis'
 }
 
 tasks.named('test') {

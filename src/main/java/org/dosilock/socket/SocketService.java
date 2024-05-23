@@ -1,5 +1,7 @@
 package org.dosilock.socket;
 
+import java.util.Base64;
+
 import org.dosilock.clazz.entity.Clazz;
 import org.dosilock.clazz.entity.FocusTime;
 import org.dosilock.clazz.repository.ClazzRepository;
@@ -11,6 +13,9 @@ import org.dosilock.member.entity.Member;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.socket.redis.NamespaceRedis;
 import org.dosilock.socket.redis.NamespaceRedisRepository;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.session.Session;
+import org.springframework.session.SessionRepository;
 import org.springframework.stereotype.Service;
 
 import com.corundumstudio.socketio.SocketIOClient;
@@ -33,6 +38,8 @@ public class SocketService {
 	private final FocusTimeRepository focusTimeRepository;
 	private final ClazzRepository clazzRepository;
 	private final MemberRepository memberRepository;
+
+	private final SessionRepository<? extends Session> sessionRepository;
 
 	@PostConstruct
 	public void init() {
@@ -68,10 +75,9 @@ public class SocketService {
 	public DataListener<Message> onFocusMessage() {
 		return (client, data, ackSender) -> {
 			System.out.println("FocusMessage: " + data.getPayload());
-
 			Clazz clazz = clazzRepository.findByClazzLink(client.getNamespace().getName().replaceAll("/", ""));
-			// 보안상 문제가 됨, 웹소켓이랑 시큐리티랑 연결 필요
-			Member member = memberRepository.findByEmail(client.getHandshakeData().getHttpHeaders().get("email"))
+
+			Member member = memberRepository.findByEmail(getEmail(client))
 				.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.USER_NOT_FOUND)));
 
 			if (!data.getPayload().equals("start") && !data.getPayload().equals("stop")) {
@@ -92,7 +98,6 @@ public class SocketService {
 	private ConnectListener onConnected() {
 		return client -> {
 			System.out.println("Client connected: " + client.getSessionId());
-
 		};
 	}
 
@@ -106,6 +111,15 @@ public class SocketService {
 		SocketIONamespace namespace = server.addNamespace("/" + name);
 		namespace.addEventListener(MessageType.FOCUS_MESSAGE.name(), Message.class, onFocusMessage());
 		namespace.addEventListener(MessageType.MEMBERS_INFO.name(), Message.class, onMemberInfo());
+	}
+
+	private String getEmail(SocketIOClient client) {
+		String sessionId = new String(
+			Base64.getDecoder().decode(client.getHandshakeData().getUrlParams().get("uid").get(0)));
+		Session session = sessionRepository.findById(sessionId);
+
+		SecurityContext securityContext = session.getAttribute("SPRING_SECURITY_CONTEXT");
+		return securityContext.getAuthentication().getName();
 	}
 
 	private void sendAllMessage(MessageType type, SocketIOClient senderClient, String message) {
