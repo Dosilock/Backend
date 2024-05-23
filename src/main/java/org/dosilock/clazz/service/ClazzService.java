@@ -100,23 +100,19 @@ public class ClazzService {
 
 	@Transactional(readOnly = true)
 	public List<ClazzListResponse> getClazzList() {
-		Long memberId = member().getId();
-		List<Clazz> clazzes = clazzRepository.findByMemberId(memberId);
+		List<Clazz> clazzes = clazzRepository.findByMemberId(member().getId());
 		List<ClazzListResponse> clazzListResponses = new ArrayList<>();
+
 		for (Clazz clazz : clazzes) {
-			Long clazzId = clazz.getId();
 			ClazzListResponse clazzListResponse = new ClazzListResponse();
 			clazzListResponse.setClazzName(clazz.getClazzTitle());
-			Long makeId = clazz.getMember().getId();
-			if (Objects.equals(makeId, memberId)) {
-				clazzListResponse.setOwned(true);
-			} else {
-				clazzListResponse.setOwned(false);
-			}
-			int memberCount = clazzPersonnelRepository.countByClazzId(clazzId);
-			clazzListResponse.setMemberCount(memberCount);
+			clazzListResponse.setOwned(clazz.getMember().getEmail().equals(member().getEmail()));
+			clazzListResponse.setMemberCount(clazzPersonnelRepository.countByClazzId(clazz.getId()));
+			clazzListResponse.setClazzIcon(clazz.getClazzIcon());
+			clazzListResponse.setClazzLink(clazz.getClazzLink());
 			clazzListResponses.add(clazzListResponse);
 		}
+
 		return clazzListResponses;
 	}
 

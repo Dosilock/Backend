@@ -14,6 +14,9 @@ import lombok.Setter;
 @Builder
 public class ClazzInfoResponse {
 
+	@Schema(description = "반 고유링크")
+	private String clazzLink;
+	
 	@Schema(description = "반 이름", example = "반 이름")
 	private String clazzName;
 
@@ -23,3 +26,4 @@ public class ClazzInfoResponse {
 	@Schema(description = "멤버 수")
 	private int memberCount;
 }
+

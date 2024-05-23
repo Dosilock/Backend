@@ -1,8 +1,14 @@
 package org.dosilock.socket;
 
+import org.dosilock.clazz.entity.Clazz;
+import org.dosilock.clazz.entity.FocusTime;
+import org.dosilock.clazz.repository.ClazzRepository;
+import org.dosilock.clazz.repository.FocusTimeRepository;
 import org.dosilock.exception.ErrorMessage;
 import org.dosilock.exception.ErrorResponseDto;
 import org.dosilock.exception.UserErrorException;
+import org.dosilock.member.entity.Member;
+import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.socket.redis.NamespaceRedis;
 import org.dosilock.socket.redis.NamespaceRedisRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +29,10 @@ public class SocketService {
 
 	private final SocketIOServer server;
 	private final NamespaceRedisRepository namespaceRedisRepository;
+
+	private final FocusTimeRepository focusTimeRepository;
+	private final ClazzRepository clazzRepository;
+	private final MemberRepository memberRepository;
 
 	@PostConstruct
 	public void init() {
@@ -59,19 +69,30 @@ public class SocketService {
 		return (client, data, ackSender) -> {
 			System.out.println("FocusMessage: " + data.getPayload());
 
-			if (data.getPayload().equals("start")) { // 집중시간 시작
+			Clazz clazz = clazzRepository.findByClazzLink(client.getNamespace().getName().replaceAll("/", ""));
+			// 보안상 문제가 됨, 웹소켓이랑 시큐리티랑 연결 필요
+			Member member = memberRepository.findByEmail(client.getHandshakeData().getHttpHeaders().get("email"))
+				.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.USER_NOT_FOUND)));
 
-			} else { // 집중시간 종료
-
+			if (!data.getPayload().equals("start") && !data.getPayload().equals("stop")) {
+				throw new UserErrorException(new ErrorResponseDto(ErrorMessage.NOT_FOCUS_MESSAGE));
 			}
 
-			sendMessage(MessageType.FOCUS_MESSAGE, client, data.getPayload());
+			focusTimeRepository.save(FocusTime.builder()
+				.clazz(clazz)
+				.member(member)
+				.timestamp(System.currentTimeMillis())
+				.focusType(data.getPayload())
+				.build());
+
+			sendMessage(MessageType.FOCUS_MESSAGE, client, "SUCCESS");
 		};
 	}
 
 	private ConnectListener onConnected() {
 		return client -> {
 			System.out.println("Client connected: " + client.getSessionId());
+
 		};
 	}
 

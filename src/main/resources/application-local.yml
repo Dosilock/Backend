@@ -2,8 +2,6 @@ server:
   port: 8080
 
 spring:
-  devtools:
-    add-properties: true
   application:
     name: dosilock
   datasource:
@@ -48,9 +46,3 @@ spring:
     redis:
       host: localhost
       port: 6379
-
-jwt:
-  secret:
-    key: dosliockapplicationdosliockapplicationdosliockapplicationdosliockapplication
-
-

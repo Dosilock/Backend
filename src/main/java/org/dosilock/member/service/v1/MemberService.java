@@ -54,6 +54,10 @@ public class MemberService implements UserDetailsService {
 
 	@Transactional
 	public void signup(RequestMemberEmailDto requestMemberEmailDto) {
+		if (memberRepository.findByEmail(requestMemberEmailDto.getEmail()).stream().count() > 0) {
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.ALREADY_SIGN_UP_MEMBER));
+		}
+
 		String randomLinkCode = inviteLink.createInveteLink();
 
 		emailUtils.sendSignupMessage(requestMemberEmailDto.getEmail(), randomLinkCode);
