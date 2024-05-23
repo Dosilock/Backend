@@ -5,7 +5,7 @@ import org.dosilock.exception.ErrorResponseDto;
 import org.dosilock.exception.UserErrorException;
 import org.dosilock.member.entity.Member;
 import org.dosilock.member.redis.MemberRedis;
-import org.dosilock.member.repository.MemberRedisRepository;
+import org.dosilock.member.redis.MemberRedisRepository;
 import org.dosilock.member.repository.MemberRepository;
 import org.dosilock.member.request.RequestMemberDto;
 import org.dosilock.member.request.RequestMemberEmailDto;
@@ -54,6 +54,10 @@ public class MemberService implements UserDetailsService {
 
 	@Transactional
 	public void signup(RequestMemberEmailDto requestMemberEmailDto) {
+		if (memberRepository.findByEmail(requestMemberEmailDto.getEmail()).stream().count() > 0) {
+			throw new UserErrorException(new ErrorResponseDto(ErrorMessage.ALREADY_SIGN_UP_MEMBER));
+		}
+
 		String randomLinkCode = inviteLink.createInveteLink();
 
 		emailUtils.sendSignupMessage(requestMemberEmailDto.getEmail(), randomLinkCode);

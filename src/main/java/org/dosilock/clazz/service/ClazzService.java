@@ -20,6 +20,7 @@ import org.dosilock.exception.ErrorMessage;
 import org.dosilock.exception.ErrorResponseDto;
 import org.dosilock.exception.UserErrorException;
 import org.dosilock.member.entity.Member;
+import org.dosilock.socket.SocketService;
 import org.dosilock.timetable.entity.Period;
 import org.dosilock.timetable.entity.Timetable;
 import org.dosilock.timetable.repository.PeriodRepository;
@@ -41,6 +42,7 @@ public class ClazzService {
 	private final ClazzPersonnelRepository personnelRepository;
 	private final InviteLink inviteLink;
 	private final ClazzPersonnelRepository clazzPersonnelRepository;
+	private final SocketService socketService;
 
 	private Member member() {
 		return GetMember.getMember();
@@ -58,6 +60,7 @@ public class ClazzService {
 			.updatedAt(LocalDateTime.now())
 			.build();
 
+		socketService.addNamespace(clazz.getClazzLink());
 		Clazz getClazz = clazzRepository.save(clazz);
 
 		ClazzPersonnel clazzPersonnel = ClazzPersonnel.builder()
@@ -100,23 +103,19 @@ public class ClazzService {
 
 	@Transactional(readOnly = true)
 	public List<ClazzListResponse> getClazzList() {
-		Long memberId = member().getId();
-		List<Clazz> clazzes = clazzRepository.findByMemberId(memberId);
+		List<Clazz> clazzes = clazzRepository.findByMemberId(member().getId());
 		List<ClazzListResponse> clazzListResponses = new ArrayList<>();
+
 		for (Clazz clazz : clazzes) {
-			Long clazzId = clazz.getId();
 			ClazzListResponse clazzListResponse = new ClazzListResponse();
 			clazzListResponse.setClazzName(clazz.getClazzTitle());
-			Long makeId = clazz.getMember().getId();
-			if (Objects.equals(makeId, memberId)) {
-				clazzListResponse.setOwned(true);
-			} else {
-				clazzListResponse.setOwned(false);
-			}
-			int memberCount = clazzPersonnelRepository.countByClazzId(clazzId);
-			clazzListResponse.setMemberCount(memberCount);
+			clazzListResponse.setOwned(clazz.getMember().getEmail().equals(member().getEmail()));
+			clazzListResponse.setMemberCount(clazzPersonnelRepository.countByClazzId(clazz.getId()));
+			clazzListResponse.setClazzIcon(clazz.getClazzIcon());
+			clazzListResponse.setClazzLink(clazz.getClazzLink());
 			clazzListResponses.add(clazzListResponse);
 		}
+
 		return clazzListResponses;
 	}
 

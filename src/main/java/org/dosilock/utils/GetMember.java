@@ -1,10 +1,12 @@
 package org.dosilock.utils;
 
+import org.dosilock.exception.ErrorMessage;
+import org.dosilock.exception.ErrorResponseDto;
+import org.dosilock.exception.UserErrorException;
 import org.dosilock.member.entity.Member;
 import org.dosilock.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,6 +23,6 @@ public class GetMember {
 		return memberRepository.findByEmail(
 			SecurityContextHolder.getContext()
 				.getAuthentication().getName()
-		).orElseThrow(() -> new UsernameNotFoundException("없는 멤버다."));
+		).orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.USER_NOT_FOUND)));
 	}
 }

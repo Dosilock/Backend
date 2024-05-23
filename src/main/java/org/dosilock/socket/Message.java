@@ -6,11 +6,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Message {
-	private MessageType type;
-	private String message;
+	private Object payload;
 
-	public Message(MessageType type, String message) {
-		this.type = type;
-		this.message = message;
+	public Message(Object payload) {
+		this.payload = payload;
 	}
 }

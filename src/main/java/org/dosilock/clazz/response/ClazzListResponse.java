@@ -10,6 +10,9 @@ import lombok.Setter;
 @Setter
 public class ClazzListResponse {
 
+	@Schema(description = "반 고유링크")
+	private String clazzLink;
+	
 	@Schema(description = "반 이름", example = "반 이름")
 	private String clazzName;
 

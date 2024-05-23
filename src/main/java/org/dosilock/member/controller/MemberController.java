@@ -100,7 +100,7 @@ public class MemberController {
 		@ApiResponse(responseCode = "401", description = "유효한 인증 거부", content = @Content(schema = @Schema(implementation = Swagger401StandardResponseDto.class))),
 		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
 	})
-	@PostMapping(value = "mypage")
+	@GetMapping(value = "mypage")
 	public ResponseEntity<ResponseMemberDto> myPage() {
 		return ResponseEntity.ok(memberService.myPage());
 	}
@@ -116,5 +116,16 @@ public class MemberController {
 		@RequestBody RequestMemberDto requestMemberDto) {
 		memberService.confirmChangePassword(requestMemberDto);
 		return ResponseEntity.ok().build();
+	}
+
+	@Operation(summary = "세션 확인 API", description = "세션이 연결되어 있는지 확인")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "성공", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "401", description = "유효한 인증 거부", content = @Content(schema = @Schema(implementation = Swagger401StandardResponseDto.class))),
+		@ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = Swagger500StandardResponseDto.class)))
+	})
+	@GetMapping(value = "status")
+	public ResponseEntity<ResponseMemberDto> status() {
+		return ResponseEntity.ok(memberService.myPage());
 	}
 }
