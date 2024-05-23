@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Message {
-	private String payload;
+	private Object payload;
 
-	public Message(String payload) {
+	public Message(Object payload) {
 		this.payload = payload;
 	}
 }

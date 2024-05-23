@@ -20,6 +20,7 @@ import org.dosilock.exception.ErrorMessage;
 import org.dosilock.exception.ErrorResponseDto;
 import org.dosilock.exception.UserErrorException;
 import org.dosilock.member.entity.Member;
+import org.dosilock.socket.SocketService;
 import org.dosilock.timetable.entity.Period;
 import org.dosilock.timetable.entity.Timetable;
 import org.dosilock.timetable.repository.PeriodRepository;
@@ -41,6 +42,7 @@ public class ClazzService {
 	private final ClazzPersonnelRepository personnelRepository;
 	private final InviteLink inviteLink;
 	private final ClazzPersonnelRepository clazzPersonnelRepository;
+	private final SocketService socketService;
 
 	private Member member() {
 		return GetMember.getMember();
@@ -58,6 +60,7 @@ public class ClazzService {
 			.updatedAt(LocalDateTime.now())
 			.build();
 
+		socketService.addNamespace(clazz.getClazzLink());
 		Clazz getClazz = clazzRepository.save(clazz);
 
 		ClazzPersonnel clazzPersonnel = ClazzPersonnel.builder()
