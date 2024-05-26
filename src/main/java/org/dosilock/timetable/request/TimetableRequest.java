@@ -20,7 +20,7 @@ public class TimetableRequest {
 	private String timetableName;
 
 	@Schema(description = "시간표 일수", example = "시간표 일수")
-	private List<Integer> timetableDays;
+	private List<Integer> dayOfWeeks;
 
 	@Schema(description = "교시")
 	private List<PeriodRequest> periodRequests;
