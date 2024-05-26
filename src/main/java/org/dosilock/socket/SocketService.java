@@ -1,6 +1,5 @@
 package org.dosilock.socket;
 
-import java.util.Base64;
 import java.util.List;
 
 import org.dosilock.clazz.entity.Clazz;
@@ -115,8 +114,7 @@ public class SocketService {
 	}
 
 	private String getEmail(SocketIOClient client) {
-		String sessionId = new String(
-			Base64.getDecoder().decode(client.getHandshakeData().getUrlParams().get("uid").get(0)));
+		String sessionId = client.getHandshakeData().getUrlParams().get("uid").get(0);
 		Session session = sessionRepository.findById(sessionId);
 
 		SecurityContext securityContext = session.getAttribute("SPRING_SECURITY_CONTEXT");
