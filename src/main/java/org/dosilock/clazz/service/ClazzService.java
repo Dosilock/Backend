@@ -92,6 +92,7 @@ public class ClazzService {
 				.periodName(per.getPeriodName())
 				.periodStartTime(LocalTime.parse(per.getPeriodStartTime()))
 				.periodDuration(per.getPeriodDuration())
+				.periodType(per.getPeriodType())
 				.attendanceRequired(per.isAttendanceRequired())
 				.build();
 

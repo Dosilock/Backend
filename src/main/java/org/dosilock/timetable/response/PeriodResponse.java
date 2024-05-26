@@ -25,10 +25,14 @@ public class PeriodResponse {
 	@JsonProperty("isAttendanceRequired")
 	private Boolean isAttendanceRequired;
 
+	@Schema
+	private String periodType;
+
 	public PeriodResponse(Period period) {
 		this.periodName = period.getPeriodName();
 		this.periodStartTime = period.getPeriodStartTime();
 		this.periodDuration = period.getPeriodDuration();
 		this.isAttendanceRequired = period.isAttendanceRequired();
+		this.periodType = period.getPeriodType();
 	}
 }
