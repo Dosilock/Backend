@@ -25,6 +25,9 @@ public class PeriodRequest {
 	@Schema(description = "교시 기간", example = "교시 기간")
 	private int periodDuration;
 
+	@Schema
+	private String periodType;
+
 	@Schema(description = "교시 출석체크 여부", example = "교시 출석체크 여부")
 	@JsonProperty("isAttendanceRequired")
 	private boolean isAttendanceRequired;

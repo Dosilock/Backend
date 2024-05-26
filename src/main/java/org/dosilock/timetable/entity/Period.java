@@ -39,5 +39,7 @@ public class Period {
 
 	private int periodDuration;
 
+	private String periodType;
+
 	private boolean attendanceRequired;
 }
