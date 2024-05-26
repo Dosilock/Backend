@@ -10,9 +10,9 @@ spring:
     name: dosilock
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/dosilock
+    url: jdbc:mysql://localhost:3306/dosilock
     username: root
-    password: 1234
+    password: Dongcci92!!
   jpa:
     hibernate:
       ddl-auto: update

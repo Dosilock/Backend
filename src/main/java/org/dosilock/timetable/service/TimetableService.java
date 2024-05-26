@@ -58,7 +58,7 @@ public class TimetableService {
 	@Transactional
 	public void updateTimetable(TimetableRequest timetableRequest, Long timetableId) {
 
-		List<Integer> dayValues = timetableRequest.getTimetableDays();
+		List<Integer> dayValues = timetableRequest.getDayOfWeeks();
 		String days = dayValues.stream()
 			.map(String::valueOf)
 			.collect(Collectors.joining(","));

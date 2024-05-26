@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService implements UserDetailsService {
+public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final MemberRedisRepository memberRedisRepository;
@@ -39,17 +39,6 @@ public class MemberService implements UserDetailsService {
 
 	private Member member() {
 		return GetMember.getMember();
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public UserDetails loadUserByUsername(String email) {
-		return memberRepository.findByEmail(email)
-			.map(user -> User.builder()
-				.username(user.getEmail())
-				.password(user.getPassword())
-				.build())
-			.orElseThrow(() -> new UserErrorException(new ErrorResponseDto(ErrorMessage.USER_NOT_FOUND)));
 	}
 
 	@Transactional
